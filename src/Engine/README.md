@@ -1,2 +1,2 @@
 # Engine
-Where the framework lives
+This is where the main functionality of the engine lives.

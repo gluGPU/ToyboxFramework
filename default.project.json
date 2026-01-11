@@ -9,6 +9,12 @@
       }
     },
 
+    "ReplicatedFirst": {
+      "Init": {
+        "$path": "src/Init"
+      }
+    },
+
     "Players": {
       "$properties": {
         "CharacterAutoLoads": false
