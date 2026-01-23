@@ -1,5 +1,6 @@
 return {
     MODULES = {
-        World = require("./Modules/World")
+        Replicator = require("./Modules/Replicator"),
+        World = require("./Modules/World"),
     }
 }

@@ -6,7 +6,7 @@
     Initialize the Engine on the Server
 --]]
 
-local Engine = require("../Engine/Engine")
+local Engine = require(".././Engine")
 
 print("Start Init - Server")
 

@@ -6,7 +6,7 @@
     Initialize the Engine on the Client
 --]]
 
-local Engine = require("../Engine/Engine")
+local Engine = require(".././Engine")
 
 if not game:IsLoaded() then
     game.Loaded:Wait()
