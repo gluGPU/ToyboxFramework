@@ -4,6 +4,7 @@
     @gluGPU
 --]]
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 -- Dependencies
@@ -14,29 +15,47 @@ local ReplicatorService = {}
 local isClient = RunService:IsClient()
 local isServer = RunService:IsServer()
 
+local remotesFolder: Folder? = nil
+local createReplicatorRemote: RemoteEvent? = nil
+
 if isServer then
-    local remotesFolder = Instance.new("Folder")
+    remotesFolder = Instance.new("Folder")
     remotesFolder.Name = "Remotes"
-    remotesFolder.Parent = game:GetService("ReplicatedStorage")
+    remotesFolder.Parent = ReplicatedStorage
     ReplicatorService._remotesFolder = remotesFolder
 
-    local createReplicatorRemote = Instance.new("RemoteEvent")
+    createReplicatorRemote = Instance.new("RemoteEvent")
     createReplicatorRemote.Name = "CreateReplicator"
     createReplicatorRemote.Parent = remotesFolder
     ReplicatorServer._createReplicatorRemote = createReplicatorRemote
+else
+    remotesFolder = ReplicatedStorage.Remotes
+    createReplicatorRemote = remotesFolder.CreateReplicator
 end
-
-
-
 
 
 function ReplicatorService.Init()
     print("Init Replicator")
+
+    if isClient then
+        assert(createReplicatorRemote ~= nil, "CreateReplicatorRemoteEvent not found.")
+
+        createReplicatorRemote.OnClientEvent:Connect(function(id: string, initialState: any)
+            --TODO: When the ReplicatorClient class is created, initialize the client replicator with
+            --      the initial state of the server replicator
+        end)
+    end
 end
 
 
-function ReplicatorService.CreateReplicator(playersToReplicateTo: {Player}): ReplicatorServer.Replicator
-    
+-- Can only be called on the server
+function ReplicatorService.CreateReplicator<T>(playersToReplicateTo: {Player}): ReplicatorServer.ReplicatorServer<T>
+    assert(isServer, "CreateReplicator() can only be called on the server.")
+
+    local remote = Instance.new("RemoteEvent")
+    remote.Parent = remotesFolder
+
+
 end
 
 

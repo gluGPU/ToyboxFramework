@@ -1,47 +1,62 @@
 --[[
-    Replicator.luau
+    ReplicatorServer.luau
     1/13/26
     @gluGPU
 --]]
 
-export type Replicator = {
+export type ReplicatorServer<T> = {
+    _id: number,
+    _remote: RemoteEvent,
+    CurrentState: T?,
     Players: {Player}
 }
 
-local Replicator = {}
-Replicator.__index = Replicator
+local ReplicatorServer = {}
+ReplicatorServer._currentId = 0
+ReplicatorServer.__index = ReplicatorServer
 
-function Replicator.new(playersToReplicateTo: {Player}): Replicator
-    local self = setmetatable({}, Replicator)
+function ReplicatorServer.new<T>(playersToReplicateTo: {Player}, initialState: T?, remote: RemoteEvent): ReplicatorServer<T>
+    local self = setmetatable({}, ReplicatorServer)
+    self._id = ReplicatorServer._currentId
+    self._remote = remote
+    self.CurrentState = nil
     self.Players = playersToReplicateTo
+
+    ReplicatorServer._currentId += 1
 
     return self
 end
 
-function Replicator.Destroy(self: Replicator)
-    
+function ReplicatorServer.Destroy(self: ReplicatorServer<any>)
+    table.clear(self)
+    setmetatable(self, nil)
+    self = nil
 end
 
-function Replicator.AddPlayers(self: Replicator, playersToAdd: {Player})
+function ReplicatorServer.AddPlayers(self: ReplicatorServer<any>, playersToAdd: {Player})
     local t = self.Players
     for _, player in playersToAdd do
         table.insert(t, player)
     end
 end
 
-function Replicator.RemovePlayers(self: Replicator, playersToRemove: {Player})
+function ReplicatorServer.RemovePlayers(self: ReplicatorServer<any>, playersToRemove: {Player})
     local i = table.find(self.Players)
     if i then
         table.remove(self.Players, i)
     end
 end
 
-function Replicator.FireAllAddedClients(self: Replicator, ...)
+function ReplicatorServer.ChangeState(self: ReplicatorServer<any>)
     
 end
 
-function Replicator.FireClient(self: Replicator, playerToFireTo: Player, ...)
+function ReplicatorServer.FireAllClients(self: ReplicatorServer<any>, ...)
     
 end
 
-return Replicator
+function ReplicatorServer.FireClient(self: ReplicatorServer<any>, playerToFireTo: Player, ...)
+    
+end
+
+return ReplicatorServer

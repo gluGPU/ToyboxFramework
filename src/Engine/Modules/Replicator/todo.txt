@@ -1,0 +1,7 @@
+Replicator
+- Replicators are objects for sending data to a group of clients.
+- Replicators hold a CurrentState.
+    - When the CurrentState changes, players added to the Replicator will receive
+      the state update automatically
+    - When players are added to the Replicator, if the CurrentState isn't nil then
+      they will receive the CurrentState automatically.
