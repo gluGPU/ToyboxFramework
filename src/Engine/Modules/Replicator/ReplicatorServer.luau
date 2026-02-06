@@ -51,12 +51,4 @@ function ReplicatorServer.ChangeState(self: ReplicatorServer<any>)
     
 end
 
-function ReplicatorServer.FireAllClients(self: ReplicatorServer<any>, ...)
-    
-end
-
-function ReplicatorServer.FireClient(self: ReplicatorServer<any>, playerToFireTo: Player, ...)
-    
-end
-
 return ReplicatorServer
