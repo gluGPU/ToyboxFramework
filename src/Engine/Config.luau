@@ -1,6 +1,9 @@
+--[[
+    Engine Configurations
+--]]
+
 return {
-    MODULES = {
-        Replicator = require("./Modules/Replicator"),
-        World = require("./Modules/World"),
-    }
+    USE_RBX_CHARACTERS = true,
+
+    MAX_LOADED_WORLDS = 1
 }

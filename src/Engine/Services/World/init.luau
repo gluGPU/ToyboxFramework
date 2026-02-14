@@ -3,7 +3,7 @@
     1/11/26
     @gluGPU
 
-    manages currently loaded map
+    
 --]]
 
 local WorldObject = require("@self/WorldObject")

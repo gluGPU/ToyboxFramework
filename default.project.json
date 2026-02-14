@@ -6,6 +6,16 @@
     "ReplicatedStorage": {
       "Engine": {
         "$path": "src/Engine"
+      },
+
+      "Tests": {
+        "$path": "tests/ReplicatedStorage"
+      }
+    },
+
+    "ServerStorage": {
+      "Tests": {
+        "$path": "tests/ServerStorage"
       }
     },
 
@@ -40,6 +50,9 @@
       "$properties": {
         "FilteringEnabled": true
       },
+
+
+
       "Baseplate": {
         "$className": "Part",
         "$properties": {

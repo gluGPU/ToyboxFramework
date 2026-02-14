@@ -7,19 +7,43 @@
 --]]
 
 -- Dependencies
+local RunService = game:GetService("RunService")
+
 local Config = require("./Config")
+local Services = require("./Services")
 
 
+-- Vars
+local isClient = RunService:IsClient()
+local isServer = RunService:IsServer()
+local isStudio = RunService:IsStudio()
 
 local Engine = {}
-Engine.Modules = Config.MODULES
+Engine.Services = Services
+Engine.Config = Config
 Engine.__index = Engine
 
-function Engine.Init()
+function Engine.Init(configOverrides: {[string]: any}?)
     print("Starting main initialization")
 
-    for name, module in Engine.Modules do
-        module.Init()
+    local config = Engine.Config
+
+    if isStudio and configOverrides then
+        for i, v in configOverrides do
+            config[i] = v
+        end
+
+        if isClient then
+            print("Engine (Client): CLIENT Testing Config Overrides")
+        elseif isServer then
+            print("Engine (Server): SERVER Testing Config Overrides")
+        end
+
+        print(configOverrides)
+    end
+
+    for i, module in config.Modules do
+        module.Init(Engine)
     end
 end
 
