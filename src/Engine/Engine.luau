@@ -11,6 +11,7 @@ local RunService = game:GetService("RunService")
 
 local Config = require("./Config")
 local Services = require("./Services")
+local Types = require("./Types")
 
 
 -- Vars
@@ -21,7 +22,7 @@ local isStudio = RunService:IsStudio()
 local Engine = {}
 Engine.Services = Services
 Engine.Config = Config
-Engine.__index = Engine
+Engine.Types = Types
 
 function Engine.Init(configOverrides: {[string]: any}?)
     print("Starting main initialization")

@@ -1,3 +1,4 @@
+--!strict
 --[[
     WorldObject.luau
     2/13/26
@@ -6,11 +7,14 @@
     WorldObjects are a collection of various level datas including geometry and scripts.
 --]]
 
-export type WorldScript = (...any?) -> (...any?)
+local WorldObject = {}
+WorldObject.__index = WorldObject
 
-export type WorldObject = {
+export type WorldScript = (self: WorldObject, ...any?) -> (...any?)
+
+export type WorldObjectData = {
     -- metadata
-    Name: string,
+    WorldName: string,
     TimeLoaded: number,
     
 
@@ -18,20 +22,64 @@ export type WorldObject = {
     _worldScripts: {[string]: WorldScript},
 
     
-    
+    Destroy: (self: WorldObject) -> (),
+
+    LoadWorld: (self: WorldObject) -> (),
+    UnloadWorld: (self: WorldObject) -> (),
+
+    GetPreloadScript: (self: WorldObject, scriptName: string) -> (WorldScript),
+    GetScript: (self: WorldObject, scriptName: string) -> (WorldScript),
+
+    RunScripts: (self: WorldObject) -> (),
+    RunPreloadScripts: (self: WorldObject) -> (),
 }
 
-local WorldObject = {}
-WorldObject.__index = WorldObject
+export type WorldObject = typeof(setmetatable({} :: WorldObjectData, WorldObject))
 
 
-function WorldObject.new()
+function WorldObject.new(worldName: string): WorldObject
+    local self: WorldObject = setmetatable({} :: WorldObjectData, WorldObject)
+    return self
+end
+
+
+function WorldObject.Destroy(self)
+    setmetatable(self, nil)
+    table.clear(self)
+end
+
+
+function WorldObject.LoadWorld(self: WorldObject)
     
 end
 
 
-function WorldObject.GetScript(scriptName: string): WorldScript
+function WorldObject.UnloadWorld(self: WorldObject)
     
+end
+
+
+function WorldObject.GetPreloadScript(self: WorldObject, scriptName: string): WorldScript
+    return self._preloadScripts[scriptName]
+end
+
+
+function WorldObject.GetScript(self: WorldObject, scriptName: string): WorldScript
+    return self._worldScripts[scriptName]
+end
+
+
+function WorldObject.RunScripts(self: WorldObject)
+    for _, s in self._worldScripts do
+        s(self)
+    end
+end
+
+
+function WorldObject.RunPreloadScripts(self: WorldObject)
+    for _, s in self._preloadScripts do
+        s(self)
+    end
 end
 
 
