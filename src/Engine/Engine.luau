@@ -9,9 +9,9 @@
 -- Dependencies
 local RunService = game:GetService("RunService")
 
-local Config = require("./Config")
-local Services = require("./Services")
-local Types = require("./Types")
+local Config = require("./EngineConfig")
+local Services = require("./EngineServices")
+local Types = require("./EngineTypes")
 
 
 -- Vars
