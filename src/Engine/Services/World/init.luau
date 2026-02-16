@@ -6,6 +6,7 @@
     
 --]]
 
+local EngineTypes = require("../EngineTypes")
 local WorldObject = require("@self/WorldObject")
 export type WorldObject = WorldObject.WorldObject
 
@@ -15,7 +16,7 @@ World._worldDataFolder = nil
 World.__index = World
 
 
-function World.Init()
+function World.Init(e: EngineTypes.Engine)
     
 end
 

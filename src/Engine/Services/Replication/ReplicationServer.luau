@@ -8,6 +8,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 -- Dependencies
+local EngineTypes = require("../../EngineTypes")
 local ReplicatorServer = require("../../Classes/ReplicatorServer")
 
 -- Variables
@@ -27,7 +28,7 @@ createReplicatorRemote.Parent = remotesFolder
 ReplicationServer._createReplicatorRemote = createReplicatorRemote
 
 
-function ReplicationServer.Init()
+function ReplicationServer.Init(e: EngineTypes.Engine)
     print("Initializing ReplicationServer")
 end
 

@@ -5,10 +5,11 @@
     @gluGPU
 --]]
 
+local EngineTypes = require("../../EngineTypes")
 local ReplicationClient = {}
 
 
-function ReplicationClient.Init()
+function ReplicationClient.Init(e: EngineTypes.Engine)
     print("Initializing ReplicationClient")
 end
 
