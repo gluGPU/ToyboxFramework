@@ -7,16 +7,12 @@
 --]]
 
 local WorldObject = require("@self/WorldObject")
+export type WorldObject = WorldObject.WorldObject
 
 local World = {}
-World.Loaded = {}
-World.WorldFolder = nil
+World._loadedWorlds = table.create(16, nil :: WorldObject)
+World._worldDataFolder = nil
 World.__index = World
-
-
-export type WorldObject = {
-    
-}
 
 
 function World.Init()

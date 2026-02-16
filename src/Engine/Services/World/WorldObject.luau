@@ -12,16 +12,21 @@ WorldObject.__index = WorldObject
 
 export type WorldScript = (self: WorldObject, ...any?) -> (...any?)
 
-export type WorldObjectData = {
+type WorldObjectData = {
     -- metadata
     WorldName: string,
     TimeLoaded: number,
     
 
+    -- World Data
     _preloadScripts: {[string]: WorldScript},
     _worldScripts: {[string]: WorldScript},
 
+    _worldGeo: Folder,
+    _lightingData: Folder,
+
     
+    -- Methods
     Destroy: (self: WorldObject) -> (),
 
     LoadWorld: (self: WorldObject) -> (),
