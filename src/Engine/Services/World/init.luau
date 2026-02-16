@@ -7,6 +7,8 @@
 --]]
 
 local EngineTypes = require("../EngineTypes")
+
+local Logger = require(".././Classes/Logger")
 local WorldObject = require("@self/WorldObject")
 export type WorldObject = WorldObject.WorldObject
 
@@ -16,8 +18,11 @@ World._worldDataFolder = nil
 World.__index = World
 
 
+local logger = Logger.new("World", true)
+
+
 function World.Init(e: EngineTypes.Engine)
-    
+    logger:Print("Initializing...")
 end
 
 

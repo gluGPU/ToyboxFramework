@@ -5,6 +5,7 @@
 --]]
 
 local EngineTypes = require("../EngineTypes")
+local Logger = require("../Classes/Logger")
 
 local Tick = {}
 Tick._lastUpdated = os.clock()
@@ -15,8 +16,11 @@ Tick.TickSpeed = 1
 Tick.__index = Tick
 
 
+local logger = Logger.new("Tick", true)
+
+
 function Tick.Init(e: EngineTypes.Engine)
-    
+    logger:Print("Initializing...")
 end
 
 

@@ -1,5 +1,5 @@
 {
-  "name": "game-framework",
+  "name": "toybox_build",
   "tree": {
     "$className": "DataModel",
 

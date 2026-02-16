@@ -5,7 +5,8 @@
 local SERVICES = {
     Replication = require("./Services/Replication"),
     World = require("./Services/World"),
-    Tick = require("./Services/Tick")
+    Tick = require("./Services/Tick"),
+    TestService = require("./Services/TestService")
 }
 
 local PRE_SIMULATION = {

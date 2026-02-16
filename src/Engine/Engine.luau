@@ -9,6 +9,7 @@
 -- Dependencies
 local RunService = game:GetService("RunService")
 
+local Logger = require("./Classes/Logger")
 local Config = require("./EngineConfig")
 local Services = require("./EngineServices")
 local Types = require("./EngineTypes")
@@ -19,6 +20,7 @@ local isClient = RunService:IsClient()
 local isServer = RunService:IsServer()
 local isStudio = RunService:IsStudio()
 
+local engineLogger = Logger.new("Engine")
 
 local Engine = {}
 
@@ -42,7 +44,8 @@ Engine._preRenderConn = nil :: RBXScriptConnection?
 export type Engine = typeof(Engine)
 
 function Engine.Init(configOverrides: {[string]: any}?)
-    print("Starting main initialization")
+    -- print("Starting main initialization")
+    engineLogger:Print("Starting engine init")
 
     local config = Engine.Config
     local services = Engine.Services
@@ -52,12 +55,7 @@ function Engine.Init(configOverrides: {[string]: any}?)
             config[i] = v
         end
 
-        if isClient then
-            print("Engine (Client): CLIENT Testing Config Overrides")
-        elseif isServer then
-            print("Engine (Server): SERVER Testing Config Overrides")
-        end
-
+        engineLogger:Print("Config Overrides Applied")
         print(configOverrides)
     end
 
@@ -109,12 +107,12 @@ end
 
 
 function Engine.CreateUpdateLoop()
-    assert(Engine.Initialized, "Engine has not initialized yet.")
-    assert(not Engine.IsUpdateLoopActive, "Engine loop is already Active.")
+    engineLogger:Assert(Engine.Initialized, "Engine has not initialized yet.")
+    engineLogger:Assert(not Engine.IsUpdateLoopActive, "Engine loop is already active.")
 
     Engine.IsUpdateLoopActive = true
 
-    print("Creating Engine Update Loop")
+    engineLogger:Print("Creating Update Loop")
 
     local c1, c2, c3 = nil, nil, nil
     local t1, t2, t3 = Engine.PreSimCallbacks, Engine.PostSimCallbacks, Engine.PreRenderCallbacks
@@ -138,9 +136,9 @@ end
 
 
 function Engine.DestroyUpdateLoop()
-    assert(Engine.IsUpdateLoopActive, "Engine loop is not active.")
+    engineLogger:Assert(Engine.IsUpdateLoopActive, "Engine loop is not active.")
+    engineLogger:Print("Destroying Update Loop")
 
-    print("Destroying Engine Update Loop")
     local c1: RBXScriptConnection?, c2: RBXScriptConnection?, c3: RBXScriptConnection? = Engine._preSimConn, Engine._postSimConn, Engine._preRenderConn
     if c1 and c2 and c3 then
         c1:Disconnect()
@@ -161,11 +159,12 @@ end
 
 
 function Engine.StepUpdateOnce()
-    assert(not Engine.IsUpdateLoopActive, "Can only step once if update loop is inactive.")
+    engineLogger:Assert(not Engine.IsUpdateLoopActive, "Can only step if update loop is inactive.")
+
     local c1: RBXScriptConnection?, c2: RBXScriptConnection?, c3: RBXScriptConnection? = nil, nil, nil
     local t1, t2, t3 = Engine.PreSimCallbacks, Engine.PostSimCallbacks, Engine.PreRenderCallbacks
 
-    print("Begin Single Step Update")
+    engineLogger:Print("Begin Loop Step")
     
     c1 = RunService.PreSimulation:Connect(function(delta: number)
         executeCallbacks(t1)
@@ -184,8 +183,6 @@ function Engine.StepUpdateOnce()
         c3:Disconnect()
         c3 = nil
     end)
-
-    print("End Single Step Update")
 end
 
 
