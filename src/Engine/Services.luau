@@ -3,7 +3,7 @@
 --]]
 
 return {
-    Replicator = require("./Modules/Replicator"),
-    World = require("./Modules/World"),
-    Tick = require("./Modules/Tick")
+    Replication = require("./Services/Replication"),
+    World = require("./Services/World"),
+    Tick = require("./Services/Tick")
 }
