@@ -1,4 +1,4 @@
-# game-framework
+# Toybox
 Unified game framework to be used across my game projects.
 
 ## Goals
