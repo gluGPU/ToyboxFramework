@@ -33,7 +33,7 @@ end
 
 
 function ReplicationClient.ObserveReplicatorTag<T>(tag: string, callback: ReplicatorHook<T>)
-    
+    logger:AssertIfUninitialized(ReplicationClient)
 end
 
 

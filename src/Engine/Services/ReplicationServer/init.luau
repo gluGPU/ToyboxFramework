@@ -23,8 +23,6 @@ export type ReplicationServer = {
 
 local ReplicationServer = BaseService.new() :: BaseService.BaseService & ReplicationServer
 
-local isServer = RunService:IsServer()
-
 local remotesFolder: Folder = Instance.new("Folder")
 remotesFolder.Name = "Remotes"
 remotesFolder.Parent = ReplicatedStorage
@@ -44,7 +42,8 @@ end
 
 -- Can only be called on the server
 function ReplicationServer.CreateReplicator<T>(tag: string, playersToReplicateTo: {Player}): ReplicatorServer.ReplicatorServer<T>
-    logger:Assert(isServer, "CreateReplicator can only be called on the server.")
+    logger:AssertIfNotServer()
+    -- logger:Assert(isServer, "CreateReplicator can only be called on the server.")
 
     local remote = Instance.new("RemoteEvent")
     remote.Parent = remotesFolder

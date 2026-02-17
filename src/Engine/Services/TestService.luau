@@ -1,10 +1,13 @@
 local BaseService = require("./BaseService")
+local Logger = require("../Classes/Logger")
+local logger = Logger.new("TestingService", true)
 
 local TestService = BaseService.new()
-TestService.__index = TestService
-
 
 function TestService.Init()
+    logger:Print("Initializing...")
+    
+    TestService.Initialized = true
     TestService._executeInitHooks()
 end
 

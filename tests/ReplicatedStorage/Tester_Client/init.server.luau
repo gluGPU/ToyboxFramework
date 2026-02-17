@@ -12,12 +12,15 @@ local Engine = require(ReplicatedStorage.Engine.Engine)
 local EngineServices = Engine.Services
 
 EngineServices.TestingService.OnInitialized(function()
-    print("TestingService Init")
+    warn("TestingService Init")
 end)
 
 EngineServices.TestingService2.OnInitialized(function()
-    print("TestingService2 Init")
+    warn("TestingService2 Init")
 end)
+
+print("Hey Hey Hey")
+EngineServices.ReplicationClient.ObserveReplicatorTag("hello", function() print("yo") end)
 
 Engine.OnInitialized(function(e: Engine.Engine)
     Engine.CreateUpdateLoop()
@@ -27,3 +30,4 @@ Engine.OnInitialized(function(e: Engine.Engine)
     end
 end)
 
+EngineServices.ReplicationServer.CreateReplicator("hello", {})
