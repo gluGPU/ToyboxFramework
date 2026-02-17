@@ -4,10 +4,22 @@
     @gluGPU
 --]]
 
+local BaseService = require("./BaseService")
 local EngineTypes = require("../EngineTypes")
 local Logger = require("../Classes/Logger")
 
-local Tick = {}
+
+export type Tick = {
+    TickRate: number,
+    TickSpeed: number,
+
+    CurrentTick: number,
+    _lastTick: number,
+    _lastUpdated: number,
+}
+
+
+local Tick = BaseService.new() :: BaseService.BaseService & Tick
 Tick._lastUpdated = os.clock()
 Tick._lastTick = 0
 Tick.CurrentTick = 0

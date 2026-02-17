@@ -74,7 +74,7 @@ function Engine.Init(configOverrides: {[string]: any}?)
         if preRender and module.PreRender then
             Engine.PreRenderCallbacks[preRender] = module.PreRender
         end
-
+        
         module.Init(Engine)
     end
 

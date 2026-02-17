@@ -1,3 +1,4 @@
+--!strict
 --[[
     World.luau
     1/11/26
@@ -6,16 +7,26 @@
     
 --]]
 
+local BaseService = require("./BaseService")
 local EngineTypes = require("../EngineTypes")
-
 local Logger = require(".././Classes/Logger")
 local WorldObject = require("@self/WorldObject")
+
 export type WorldObject = WorldObject.WorldObject
 
-local World = {}
-World._loadedWorlds = table.create(16, nil :: WorldObject)
+export type World = {
+    _loadedWorlds: {WorldObject},
+    _worldDataFolder: Folder?,
+
+    SetWorldFolder: (folder: Folder) -> (),
+    FindWorld: (worldName: string) -> (),
+    LoadWorld: (worldName: string) -> (),
+    GetCurrentWorlds: () -> ({WorldObject})
+}
+
+local World = BaseService.new() :: BaseService.BaseService & World
+World._loadedWorlds = {}
 World._worldDataFolder = nil
-World.__index = World
 
 
 local logger = Logger.new("World", true)
@@ -26,8 +37,8 @@ function World.Init(e: EngineTypes.Engine)
 end
 
 
-function World.SetWorldFolder(folder: Instance)
-    World.WorldFolder = folder
+function World.SetWorldFolder(folder: Folder)
+    World._worldDataFolder = folder
 end
 
 
@@ -41,8 +52,8 @@ function World.LoadWorld(worldName: string)
 end
 
 
-function World.GetCurrentWorlds()
-    
+function World.GetCurrentWorlds(): {WorldObject}
+    return {}
 end
 
 

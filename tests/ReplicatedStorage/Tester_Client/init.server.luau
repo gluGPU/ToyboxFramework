@@ -9,14 +9,21 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Engine = require(ReplicatedStorage.Engine.Engine)
+local EngineServices = Engine.Services
+
+EngineServices.TestingService.OnInitialized(function()
+    print("TestingService Init")
+end)
+
+EngineServices.TestingService2.OnInitialized(function()
+    print("TestingService2 Init")
+end)
+
 Engine.OnInitialized(function(e: Engine.Engine)
-    print("--- Initialization Hook Called ---")
     Engine.CreateUpdateLoop()
 
     return function(e: Engine.Engine)
-        print("Cleanup Hook Called")
+        -- print("Cleanup Hook Called")
     end
 end)
 
-local EngineServices = Engine.Services
-local Replication = EngineServices.Replication

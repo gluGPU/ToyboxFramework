@@ -23,7 +23,7 @@ Logger.__index = Logger
 
 type LoggerData = {
     _loggerId: string,
-    _environment: string,
+    _env: string,
     IsStudioOnly: boolean,
     
     Destroy: (self: Logger) -> (),
@@ -40,7 +40,7 @@ function Logger.new(loggerId: string, isStudioOnly: boolean?): Logger
     local self: Logger = setmetatable({} :: LoggerData, Logger)
 
     self._loggerId = loggerId
-    self._environment = isClient and "Client" or isServer and "Server" or "???"
+    self._env = isClient and "Client" or isServer and "Server" or "???"
     self.IsStudioOnly = (isStudioOnly ~= nil and isStudioOnly) or false
 
     return self
@@ -60,7 +60,7 @@ function Logger.Assert<T>(self: Logger, v: T, msg: string)
 
     if not v then
         error(string.format(
-            assertPrefix, self._environment, self._loggerId, msg
+            assertPrefix, self._env, self._loggerId, msg
         ))
     end
 end
@@ -71,7 +71,7 @@ function Logger.Print<T>(self: Logger, ...: T)
         return
     end
 
-    print(string.format(normalPrefix, self._environment, self._loggerId), ...)
+    print(string.format(normalPrefix, self._env, self._loggerId), ...)
 end
 
 
@@ -80,7 +80,7 @@ function Logger.Warn<T>(self: Logger, ...: T)
         return
     end
 
-    warn(string.format(warnPrefix, self._environment, self._loggerId), ...)
+    warn(string.format(warnPrefix, self._env, self._loggerId), ...)
 end
 
 

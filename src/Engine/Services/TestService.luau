@@ -1,7 +1,12 @@
-local BaseService = require("./_BaseService")
+local BaseService = require("./BaseService")
 
-local TestService = {}
+local TestService = BaseService.new()
 TestService.__index = TestService
-setmetatable(TestService, BaseService)
+
+
+function TestService.Init()
+    TestService._executeInitHooks()
+end
+
 
 return TestService

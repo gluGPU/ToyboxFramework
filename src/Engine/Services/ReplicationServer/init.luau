@@ -8,12 +8,20 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 -- Dependencies
+local BaseService = require("./BaseService")
 local EngineTypes = require(".././EngineTypes")
 local Logger = require(".././Classes/Logger")
 local ReplicatorServer = require(".././Classes/ReplicatorServer")
 
 -- Variables
-local ReplicationServer = {}
+export type ReplicationServer = {
+    _remotesFolder: Folder,
+    _createReplicatorRemote: RemoteEvent,
+
+    CreateReplicator: <T>(tag: string, playersToReplicateTo: {Player}) -> (ReplicatorServer.ReplicatorServer<T>)
+}
+
+local ReplicationServer = BaseService.new() :: BaseService.BaseService & ReplicationServer
 
 local isServer = RunService:IsServer()
 
@@ -27,9 +35,7 @@ createReplicatorRemote.Name = "CreateReplicator"
 createReplicatorRemote.Parent = remotesFolder
 ReplicationServer._createReplicatorRemote = createReplicatorRemote
 
-
 local logger = Logger.new("ReplicationServer", true)
-
 
 function ReplicationServer.Init(e: EngineTypes.Engine)
     logger:Print("Initializing...")

@@ -5,13 +5,18 @@
     @gluGPU
 --]]
 
+local BaseService = require("./BaseService")
 local EngineTypes = require(".././EngineTypes")
 local Logger = require(".././Classes/Logger")
 local ReplicatorClient = require(".././Classes/ReplicatorClient")
 
 
-local ReplicationClient = {}
+export type ReplicationClient = {
+    ObserveReplicatorTag: <T>(tag: string, callback: ReplicatorHook<T>) -> ()
+}
 
+
+local ReplicationClient = BaseService.new() :: BaseService.BaseService & ReplicationClient
 
 export type ReplicatorClient<T> = ReplicatorClient.ReplicatorClient<T>
 export type ReplicatorHook<T> = (replicator: ReplicatorClient<T>) -> (() -> ())
