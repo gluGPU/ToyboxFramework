@@ -4,6 +4,10 @@
     "$className": "DataModel",
 
     "ReplicatedStorage": {
+      "Game": {
+        "$path": "src/Game"
+      },
+
       "Engine": {
         "$path": "src/Engine"
       },

@@ -20,7 +20,10 @@ EngineServices.TestingService2.OnInitialized(function()
 end)
 
 print("Hey Hey Hey")
-EngineServices.ReplicationClient.ObserveReplicatorTag("hello", function() print("yo") end)
+local rc = EngineServices.ReplicationClient
+rc.OnInitialized(function()
+    rc.ObserveReplicatorTag("hello", function() print("yo") end)
+end)
 
 Engine.OnInitialized(function(e: Engine.Engine)
     Engine.CreateUpdateLoop()

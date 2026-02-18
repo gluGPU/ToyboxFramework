@@ -3,7 +3,7 @@
     1/11/26
     @gluGPU
 
-    Framework
+    Entry point for the Toybox Framework.
 --]]
 
 -- Dependencies
@@ -86,6 +86,12 @@ function Engine.Init(configOverrides: {[string]: any}?)
         end
     end
 end
+
+
+function Engine.RegisterService()
+    
+end
+
 
 function Engine.OnInitialized(callback: (Engine) -> ((Engine) -> ()?))
     if Engine.Initalized then
