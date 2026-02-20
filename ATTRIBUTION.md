@@ -1,5 +1,4 @@
-# List of External Libraries
+# Toybox Attributions
 
 ### impulse
-magicoal-nerb
-License: https://creativecommons.org/licenses/by/4.0/
+Author: magicoal-nerb | [License](https://creativecommons.org/licenses/by/4.0/)
