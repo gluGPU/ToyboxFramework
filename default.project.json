@@ -38,7 +38,8 @@
         "DevTouchMovementMode": "Scriptable",
         "DevComputerCameraMovementMode": "Classic",
         "DevTouchCameraMovementMode": "Classic",
-        "LoadCharacterAppearance": false
+        "LoadCharacterAppearance": false,
+        "UserEmotesEnabled": false
       },
 
       "StarterCharacterScripts": {
@@ -47,64 +48,6 @@
 
       "StarterPlayerScripts": {
         "$path": "src/Build/StarterPlayerScripts"
-      }
-    },
-
-    "Workspace": {
-      "$properties": {
-        "FilteringEnabled": true
-      },
-
-
-
-      "Baseplate": {
-        "$className": "Part",
-        "$properties": {
-          "Anchored": true,
-          "Color": [
-            0.38823,
-            0.37254,
-            0.38823
-          ],
-          "Locked": true,
-          "Position": [
-            0,
-            -10,
-            0
-          ],
-          "Size": [
-            512,
-            20,
-            512
-          ]
-        }
-      }
-    },
-
-    "Lighting": {
-      "$properties": {
-        "Ambient": [
-          0,
-          0,
-          0
-        ],
-
-        "OutdoorAmbient": [
-          0, 0, 0
-        ],
-
-        "Brightness": 3,
-        "GlobalShadows": true,
-        "Outlines": false,
-        "Technology": "Unified",
-        "LightingStyle": "Realistic",
-        "PrioritizeLightingQuality": true
-      }
-    },
-
-    "SoundService": {
-      "$properties": {
-        "RespectFilteringEnabled": true
       }
     }
   }

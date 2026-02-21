@@ -5,6 +5,7 @@
 local SERVICES = {
     ReplicationClient = require("./Services/ReplicationClient"),
     ReplicationServer = require("./Services/ReplicationServer"),
+    Region = require("./Services/Region"),
     World = require("./Services/World"),
     Tick = require("./Services/Tick"),
 

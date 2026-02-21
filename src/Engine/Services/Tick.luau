@@ -14,13 +14,13 @@ export type Tick = {
     TickSpeed: number,
 
     CurrentTick: number,
-    _lastTick: number,
-    _lastUpdated: number,
+    _currentDelta: number,
+    _lastTick: number
 }
 
 
 local Tick = BaseService.new() :: BaseService.BaseService & Tick
-Tick._lastUpdated = os.clock()
+Tick._currentDelta = 0
 Tick._lastTick = 0
 Tick.CurrentTick = 0
 Tick.TickRate = 1 / 100
@@ -41,7 +41,7 @@ function Tick.PreSimulation(delta: number)
     local rate = Tick.TickRate
     local speed = Tick.TickSpeed
 
-    local accumulated = os.clock() - Tick._lastUpdated
+    local accumulated = Tick._currentDelta + delta
 	local numTicks = Tick.GetNumTicksForDelta(accumulated, rate, speed)
 	
     local currentTick = Tick.CurrentTick
@@ -61,14 +61,14 @@ function Tick.PreSimulation(delta: number)
 		end
 		
         Tick.CurrentTick = currentTick
-        Tick._lastUpdated += (numTicks * rate / speed)
+        Tick._currentDelta -= (numTicks * rate / speed)
 	end
 end
 
 
 function Tick.PreRender(delta: number)
     -- interpolation step
-    local accumulated = os.clock() - Tick._lastUpdated
+    local accumulated = Tick._currentDelta
     local currentTick = Tick.CurrentTick
     local lastTick = currentTick - 1
 

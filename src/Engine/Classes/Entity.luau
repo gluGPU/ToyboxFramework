@@ -3,12 +3,12 @@
     2/6/26
     @gluGPU
 
-    An Entity represents an ID that can be used to access Components. lalala.
+    An Entity represents an ID that can be used to access components.
 --]]
 
 local Strings = require("../Util/Strings")
 
-local MAX_ENTITIES = 100
+local MAX_ENTITIES = 1024
 
 local Entity = {
     _MAX_ENTITIES = MAX_ENTITIES,

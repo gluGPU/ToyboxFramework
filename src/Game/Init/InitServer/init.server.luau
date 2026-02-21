@@ -6,7 +6,8 @@
     Initialize the Engine on the Server
 --]]
 
-local Engine = require(".././Engine")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Engine = require(ReplicatedStorage.Engine.Engine)
 
 print("Start Init - Server")
 

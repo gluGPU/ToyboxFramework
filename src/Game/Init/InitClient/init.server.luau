@@ -6,7 +6,8 @@
     Initialize the Engine on the Client
 --]]
 
-local Engine = require(".././Engine")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Engine = require(ReplicatedStorage.Engine.Engine)
 
 if not game:IsLoaded() then
     game.Loaded:Wait()

@@ -10,7 +10,6 @@ local EngineTypes = require("../EngineTypes")
 local BaseService = {}
 BaseService.__index = BaseService
 
-
 export type BaseService = {
     Initialized: boolean,
     _initHooks: {() -> ()},
