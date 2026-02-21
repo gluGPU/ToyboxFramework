@@ -1,3 +1,4 @@
 [submodule "src/Engine/Libraries/Impulse"]
 	path = src/Engine/Libraries/Impulse
 	url = https://github.com/gluGPU/impulse
+	branch = ToyboxFramework
