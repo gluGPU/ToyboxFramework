@@ -35,7 +35,7 @@ type LoggerData = {
     Destroy: (self: Logger) -> (),
 
     Assert: <T>(self: Logger, v: T, msg: string) -> (),
-    AssertIfUninitialized: (self: Logger, t: {Uninitialized: boolean}) -> (),
+    AssertIfUninitialized: (self: Logger, t: {Initialized: boolean}) -> (),
     AssertIfNotClient: (self: Logger) -> (),
     AssertIfNotServer: (self: Logger) -> (),
     Print: <T>(self: Logger, ...T) -> (),

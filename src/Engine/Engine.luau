@@ -78,8 +78,10 @@ function Engine.Init(configOverrides: {[string]: any}?)
         module.Init(Engine)
     end
 
+    warn("Running init stuff")
     Engine.Initialized = true
     for _, callback in Engine.InitializationHooks do
+        warn("Yo")
         local cleanup = callback(Engine)
         if cleanup then
             table.insert(Engine.CleanupHooks, cleanup)
@@ -94,20 +96,23 @@ end
 
 
 function Engine.OnInitialized(callback: (Engine) -> ((Engine) -> ()?))
-    if Engine.Initalized then
+    warn("called")
+    if Engine.Initialized then
+        warn("just run it")
         local cleanup = callback(Engine)
         if cleanup then
             table.insert(Engine.CleanupHooks, cleanup)
         end
     else
+        warn('add it')
         table.insert(Engine.InitializationHooks, callback)
     end
 end
 
 
-local function executeCallbacks(t: {(...any?) -> (...any?)})
+local function executeCallbacks(delta: number, t: {(...any?) -> (...any?)})
     for _, fn in t do
-        fn()
+        fn(delta)
     end
 end
 
@@ -124,15 +129,15 @@ function Engine.CreateUpdateLoop()
     local t1, t2, t3 = Engine.PreSimCallbacks, Engine.PostSimCallbacks, Engine.PreRenderCallbacks
 
     c1 = RunService.PreSimulation:Connect(function(delta: number)
-        executeCallbacks(t1)
+        executeCallbacks(delta, t1)
     end)
 
     c2 = RunService.PostSimulation:Connect(function(delta: number)
-        executeCallbacks(t2)
+        executeCallbacks(delta, t2)
     end)
 
     c3 = RunService.PreRender:Connect(function(delta: number)
-        executeCallbacks(t3)
+        executeCallbacks(delta, t3)
     end)
 
     Engine._preSimConn = c1

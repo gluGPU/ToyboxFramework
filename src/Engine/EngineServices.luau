@@ -18,7 +18,7 @@ local PRE_SIMULATION = {
 }
 
 local POST_SIMULATION = {
-
+    "Tick"
 }
 
 local PRE_RENDER = {

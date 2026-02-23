@@ -42,6 +42,7 @@ end
 
 -- Can only be called on the server
 function ReplicationServer.CreateReplicator<T>(tag: string, playersToReplicateTo: {Player}): ReplicatorServer.ReplicatorServer<T>
+    logger:AssertIfUninitialized(ReplicatorServer)
     logger:AssertIfNotServer()
     -- logger:Assert(isServer, "CreateReplicator can only be called on the server.")
 
