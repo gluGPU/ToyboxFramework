@@ -17,6 +17,7 @@ export type RegionObject = RegionObject.RegionObject
 export type Region = {
     _loadedRegions: {RegionObject},
     _regionDataFolder: Folder?,
+    _maxLoadedRegions: number,
 
     SetRegionFolder: (folder: Folder) -> (),
     FindRegion: (RegionName: string) -> (),
@@ -27,6 +28,7 @@ export type Region = {
 local Region = BaseService.new() :: BaseService.BaseService & Region
 Region._loadedRegions = {}
 Region._regionDataFolder = nil
+Region._maxLoadedRegions = 16
 
 
 local logger = Logger.new("Region", true)
@@ -34,6 +36,10 @@ local logger = Logger.new("Region", true)
 
 function Region.Init(e: EngineTypes.Engine)
     logger:Print("Initializing...")
+    Region._maxLoadedRegions = e.Config.MAX_LOADED_REGIONS
+
+    Region.Initialized = true
+    Region._executeInitHooks()
 end
 
 
@@ -53,7 +59,7 @@ end
 
 
 function Region.GetCurrentRegions(): {RegionObject}
-    return {}
+    return Region._loadedRegions
 end
 
 

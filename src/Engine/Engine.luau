@@ -9,6 +9,7 @@
 -- Dependencies
 local RunService = game:GetService("RunService")
 
+local BaseService = require("./Services/BaseService")
 local Logger = require("./Classes/Logger")
 local Config = require("./EngineConfig")
 local Services = require("./EngineServices")
@@ -78,10 +79,8 @@ function Engine.Init(configOverrides: {[string]: any}?)
         module.Init(Engine)
     end
 
-    warn("Running init stuff")
     Engine.Initialized = true
     for _, callback in Engine.InitializationHooks do
-        warn("Yo")
         local cleanup = callback(Engine)
         if cleanup then
             table.insert(Engine.CleanupHooks, cleanup)
@@ -96,9 +95,7 @@ end
 
 
 function Engine.OnInitialized(callback: (Engine) -> ((Engine) -> ()?))
-    warn("called")
     if Engine.Initialized then
-        warn("just run it")
         local cleanup = callback(Engine)
         if cleanup then
             table.insert(Engine.CleanupHooks, cleanup)
@@ -123,7 +120,7 @@ function Engine.CreateUpdateLoop()
 
     Engine.IsUpdateLoopActive = true
 
-    engineLogger:Print("Creating Update Loop")
+    engineLogger:Warn("Creating Update Loop")
 
     local c1, c2, c3 = nil, nil, nil
     local t1, t2, t3 = Engine.PreSimCallbacks, Engine.PostSimCallbacks, Engine.PreRenderCallbacks
@@ -148,7 +145,7 @@ end
 
 function Engine.DestroyUpdateLoop()
     engineLogger:Assert(Engine.IsUpdateLoopActive, "Engine loop is not active.")
-    engineLogger:Print("Destroying Update Loop")
+    engineLogger:Warn("Destroying Update Loop")
 
     local c1: RBXScriptConnection?, c2: RBXScriptConnection?, c3: RBXScriptConnection? = Engine._preSimConn, Engine._postSimConn, Engine._preRenderConn
     if c1 and c2 and c3 then
@@ -175,8 +172,8 @@ function Engine.StepUpdateOnce()
     local c1: RBXScriptConnection?, c2: RBXScriptConnection?, c3: RBXScriptConnection? = nil, nil, nil
     local t1, t2, t3 = Engine.PreSimCallbacks, Engine.PostSimCallbacks, Engine.PreRenderCallbacks
 
-    engineLogger:Print("Begin Loop Step")
-    
+    engineLogger:Warn("StepUpdateOnce called")
+
     c1 = RunService.PreSimulation:Connect(function(delta: number)
         executeCallbacks(t1)
         c1:Disconnect()
