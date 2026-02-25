@@ -25,7 +25,7 @@ rc.OnInitialized(function()
     rc.ObserveReplicatorTag("hello", function() print("yo") end)
 end)
 
-local Tick = EngineServices.Tick
+local Tick = Engine.Tick
 warn("yaya")
 Engine.OnInitialized(function()
     Engine.CreateUpdateLoop()
@@ -33,23 +33,34 @@ Engine.OnInitialized(function()
     warn("Gosh diddly darn it!")
 
     Tick.BindToTick("Hello", 5, function(delta: number)
-        -- warn(Tick.CurrentTick, "Wassup", delta)
+        warn(Tick.CurrentTick, "Tick Start", delta)
     end)
 
     Tick.BindToTick("Hello2", 10, function(delta: number)
-        -- warn(Tick.CurrentTick, "This is second")
+        warn(Tick.CurrentTick, "Tick2")
     end)
 
     Tick.BindToInterpolation("Hello", 5, function(alpha: number)
-        -- warn("Interp step", string.format("%.3f", alpha))
+        warn("Interp step", string.format("%.3f", alpha))
     end)
 
     Tick.BindToInterpolation("Hello2", 6, function(alpha: number)
-        -- warn("Second")
+        warn("Interp2")
     end)
 
-    return function(e: Engine.Engine)
-        -- print("Cleanup Hook Called")
+    Tick.BindToRender("Hello", 5, function(delta: number)
+        warn("Render step", string.format("%.3f", delta))
+    end)
+
+    Tick.BindToRender("Hello2", 6, function()
+        warn("Render2 (final)")
+    end)
+
+    while true do
+        task.wait(3)
+        Engine.DestroyUpdateLoop()
+        task.wait(3)
+        Engine.CreateUpdateLoop()
     end
 end)
 

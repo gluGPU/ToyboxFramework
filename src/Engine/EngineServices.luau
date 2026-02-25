@@ -7,27 +7,10 @@ local SERVICES = {
     ReplicationServer = require("./Services/ReplicationServer"),
     Region = require("./Services/Region"),
     World = require("./Services/World"),
-    Tick = require("./Services/Tick"),
+    -- Tick = require("./Services/Tick"),
 
     TestingService = require("./Services/TestService"),
     TestingService2 = require("./Services/TestService2")
 }
 
-local PRE_SIMULATION = {
-    "Tick"
-}
-
-local POST_SIMULATION = {
-    "Tick"
-}
-
-local PRE_RENDER = {
-    "Tick"
-}
-
-return {
-    Services = SERVICES,
-    PreSimulationPriority = PRE_SIMULATION,
-    PostSimulationPriority = POST_SIMULATION,
-    PreRenderPriority = PRE_RENDER
-}
+return SERVICES
