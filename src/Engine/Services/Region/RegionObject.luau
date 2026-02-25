@@ -25,6 +25,10 @@ type RegionObjectData = {
     _worldGeo: Folder,
     _lightingData: Folder,
 
+
+    -- Hooks
+    _destroyHooks: {() -> ()},
+
     
     -- Methods
     Destroy: (self: RegionObject) -> (),
@@ -48,7 +52,11 @@ function RegionObject.new(worldName: string): RegionObject
 end
 
 
-function RegionObject.Destroy(self)
+function RegionObject.Destroy(self: RegionObject)
+    for _, callback in self._destroyHooks do
+        callback()
+    end
+    
     setmetatable(self, nil)
     table.clear(self)
 end

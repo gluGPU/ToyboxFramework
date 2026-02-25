@@ -81,7 +81,6 @@ function Engine.OnInitialized(callback: (Engine) -> ((Engine) -> ()?))
             table.insert(Engine.CleanupHooks, cleanup)
         end
     else
-        warn('add it')
         table.insert(Engine.InitializationHooks, callback)
     end
 end
