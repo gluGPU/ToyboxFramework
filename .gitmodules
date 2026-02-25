@@ -2,3 +2,7 @@
 	path = src/Engine/Libraries/Impulse
 	url = https://github.com/gluGPU/impulse
 	branch = ToyboxFramework
+[submodule "src/Engine/Libraries/Signal"]
+	path = src/Engine/Libraries/Signal
+	url = https://github.com/gluGPU/SignalPlus
+	branch = ToyboxFramework
