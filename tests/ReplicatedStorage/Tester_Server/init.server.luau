@@ -8,12 +8,31 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Engine = require(ReplicatedStorage.Engine.Engine)
 
 Engine.OnInitialized(function()
     local Replication = Engine.Services.Replication
-    local rs = Replication.Server.CreateReplicatedState("ReallyAwesome", Players:GetPlayers(), 0)
+    local rState = Replication.Server.CreateReplicatedState("ReallyAwesome", Players:GetPlayers(), 0)
+
+    rState:ObserveState(function(newState: number)
+        warn(rState.Name.. "Server: ".. newState)
+
+        -- local n = 0
+        -- local c: RBXScriptConnection? = nil
+
+        -- c = RunService.PostSimulation:Connect(function(delta: number)
+        --     n += delta
+        --     print(n)
+        -- end)
+
+        return function()
+            -- if c then
+            --     c:Disconnect()
+            -- end
+        end
+    end)
 
     task.defer(function()
         local counter = 0
@@ -21,11 +40,11 @@ Engine.OnInitialized(function()
             task.wait(0.333)
 
             counter += 1
-            rs:ChangeState(counter)
+            rState:ChangeState(counter)
         end
     end)
 
     Players.PlayerAdded:Connect(function(player: Player)
-        rs:AddPlayers({player})
+        rState:AddPlayers({player})
     end)
 end)

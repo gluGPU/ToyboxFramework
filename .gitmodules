@@ -6,3 +6,7 @@
 	path = src/Engine/Libraries/Signal
 	url = https://github.com/gluGPU/SignalPlus
 	branch = ToyboxFramework
+[submodule "src/Engine/Libraries/Iris"]
+	path = src/Engine/Libraries/Iris
+	url = https://github.com/gluGPU/Iris
+	branch = ToyboxFramework

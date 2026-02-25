@@ -3,6 +3,7 @@
 --]]
 
 local SERVICES = {
+    Debug = require("./Services/Debug"),
     Replication = require("./Services/Replication"),
     -- ReplicationClient = require("./Services/ReplicationClient"),
     -- ReplicationServer = require("./Services/ReplicationServer"),

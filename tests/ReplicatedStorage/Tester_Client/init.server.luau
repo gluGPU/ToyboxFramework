@@ -6,7 +6,9 @@
     Testing file for client functionality of engine.
 --]]
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Engine = require(ReplicatedStorage.Engine.Engine)
 local EngineServices = Engine.Services
@@ -20,11 +22,8 @@ EngineServices.TestingService2.OnInitialized(function()
 end)
 
 local Tick = Engine.Tick
-warn("yaya")
 Engine.OnInitialized(function()
     Engine.CreateUpdateLoop()
-
-    warn("Gosh diddly darn it!")
 
     Tick.BindToTick("Hello", 5, function(delta: number)
         -- warn(Tick.CurrentTick, "Tick Start", delta)
@@ -61,10 +60,63 @@ Engine.OnInitialized(function()
 
     -- test replication
     local Replication = Engine.Services.Replication
+    local array = {}
     Replication.OnReplicatedStateCreated:Connect(function(rState)
         rState:ObserveState(function(newState)
-            warn(newState)
+            warn(rState.Name.. "Client: ".. newState)
+
+            -- local n = 0
+            -- local c: RBXScriptConnection? = nil
+
+            -- c = RunService.PostSimulation:Connect(function(delta: number)
+            --     n += delta
+            --     print(n)
+            -- end)
+
+            return function()
+                -- if c then
+                --     c:Disconnect()
+                -- end
+            end
         end)
+
+        rState:OnDestroying(function()
+            local i = table.find(array, rState)
+            if i then
+                table.remove(i)
+            end
+        end)
+
+        table.insert(array, rState)
+    end)
+
+    local Debug = Engine.Services.Debug
+    local Iris = Debug.Iris
+
+    Iris:Connect(function()
+        local windowSize = Iris.State(Vector2.new(250, 500))
+
+        Iris.Window({"Toybox - Debug View"}, {size = windowSize})
+
+            Iris.Tree({"Tick Info"})
+                Iris.Text({"Tick Rate: ".. 1 / Tick.TickRate})
+                Iris.Text({string.format("Tick Speed: %.3f", Tick.TickSpeed)})
+                Iris.Text({"Current Tick: ".. Tick.CurrentTick})
+                Iris.Text({string.format("Current Interp: %.3f", Tick._currentDelta / (Tick.TickRate / Tick.TickSpeed))})
+            Iris.End()
+
+            Iris.Tree({"Replication Info"})
+                Iris.Text({"# of RStates: ".. #array})
+                Iris.Tree({"ReplicatedStates"})
+                    for _, rState in array do
+                        Iris.Text({string.format(
+                            "%i: %s -- %*", rState.Id, rState.Name, rState.State
+                        )})
+                    end
+                Iris.End()
+            Iris.End()
+
+        Iris.End()
     end)
 end)
 
