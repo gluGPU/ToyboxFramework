@@ -12,5 +12,6 @@ return {
     LOGGER_NOT_SERVER_PREFIX = "[Toybox%s: %s] %s:%s can only be called on the server.",
     LOGGER_NOT_INITIALIZED = "[Toybox%s: %s] %s:%s can only be called after service initialization.",
 
-    ERR_TOO_MANY_ENTITIES = "[Toybox%s: %s] Too many entities--max number of entities is %s!"
+    ERR_TOO_MANY_REGIONS = "Too many regions currently loaded. Max number of regions is %s!",
+    ERR_TOO_MANY_ENTITIES = "Too many entities. Max number of entities is %s!"
 }
