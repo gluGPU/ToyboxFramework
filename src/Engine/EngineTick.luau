@@ -181,18 +181,22 @@ local function updateCallbacksRender()
     end
 end
 
-
+local array = Tick._orderedCallbacksTicking
+local rate = Tick.TickRate
+local max = Tick.MaxTicks
 function Tick.Init(e: EngineTypes.Engine)
     logger:Print("Initializing...")
 
     Tick.TickRate = 1 / e.Config.TICK_RATE
     Tick.MaxTicks = e.Config.MAX_TICKS_PER_FRAME
+    
+    rate = Tick.TickRate
+    max = Tick.MaxTicks
+
+
+    warn(Tick.TickRate)
 end
 
-
-local array = Tick._orderedCallbacksTicking
-local rate = Tick.TickRate
-local max = Tick.MaxTicks
 function Tick.ExecuteTickCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_TICK_STEP)
 
