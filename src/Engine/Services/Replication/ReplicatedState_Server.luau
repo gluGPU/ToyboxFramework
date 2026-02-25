@@ -19,7 +19,7 @@ type ReplicatedState_ServerData<T> = {
     _onChangedObservers: {[(newState: T?) -> ()]: boolean},
     _onDestroyHooks: {() -> ()},
 
-    _remote: RemoteEvent,
+    _remote: RemoteEvent | UnreliableRemoteEvent,
     Id: number,
     Name: string,
     State: T?,
@@ -42,7 +42,7 @@ type ReplicatedState_ServerData<T> = {
 export type ReplicatedState_Server<T> = typeof(setmetatable({} :: ReplicatedState_ServerData<T>, ReplicatedState_Server))
 
 
-function ReplicatedState_Server.new<T>(name: string, remote: RemoteEvent, players: {Player}, initialState: T?): ReplicatedState_Server<T>
+function ReplicatedState_Server.new<T>(name: string, remote: RemoteEvent | UnreliableRemoteEvent, players: {Player}, initialState: T?): ReplicatedState_Server<T>
     logger:Print(string.format(
         "Create new ReplicatedState_Server - id: %i, name: %s, has init state: %*",
         currentId, name, initialState ~= nil

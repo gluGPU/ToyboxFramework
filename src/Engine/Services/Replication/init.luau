@@ -56,13 +56,8 @@ function Replication.Init()
     Replication.OnReplicatedStateCreated = onRsCreatedSignal
 
     if isClient then
-        -- Unfortunately, I don't really know any better way to do this,
-        -- so we're sticking with a :WaitForChild() for now. Waiting for
-        -- a service to be initiated with the .OnInitiated() observer is
-        -- correct usage anyway, so it shouldn't be a big issue.
-
-        local createRemote = ReplicatedStorage:WaitForChild(CREATE_RSTATE_REMOTE_NAME) :: RemoteEvent
-        local remotesFolder = ReplicatedStorage:WaitForChild(RSTATE_REMOTES_FOLDER_NAME) :: Folder
+        local createRemote = ReplicatedStorage:FindFirstChild(CREATE_RSTATE_REMOTE_NAME) :: RemoteEvent
+        local remotesFolder = ReplicatedStorage:FindFirstChild(RSTATE_REMOTES_FOLDER_NAME) :: Folder
 
         Replication._createReplicatedStateRemote = createRemote
         Replication._replicatedStateRemotes = remotesFolder
@@ -91,11 +86,13 @@ end
 
 
 -- Server API
-function Server.CreateReplicatedState<T>(name: string, players: {Player}, initialState: T?): ReplicatedState_Server<T>
+function Server.CreateReplicatedState<T>(name: string, players: {Player}, initialState: T?, isUnreliable: boolean?): ReplicatedState_Server<T>
     logger:AssertIfUninitialized(Replication)
     logger:AssertIfNotServer()
+    logger:Assert(name ~= nil, "Must provide name argument")
+    logger:Assert(players ~= nil, "Must provide players argument")
 
-    local newRemote = Instance.new("RemoteEvent")
+    local newRemote: RemoteEvent | UnreliableRemoteEvent = isUnreliable == true and Instance.new("UnreliableRemoteEvent") or Instance.new("RemoteEvent")
     newRemote.Name = name
     newRemote.Parent = Replication._replicatedStateRemotes
 

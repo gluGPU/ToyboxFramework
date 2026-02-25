@@ -25,23 +25,10 @@
 
     "Players": {
       "$properties": {
-        "CharacterAutoLoads": false
       }
     },
 
     "StarterPlayer": {
-      "$properties": {
-        "AutoJumpEnabled": false,
-        "LuaCharacterController": "NoCharacterController",
-        "EnableMouseLockOption": false,
-        "DevComputerMovementMode": "Scriptable",
-        "DevTouchMovementMode": "Scriptable",
-        "DevComputerCameraMovementMode": "Classic",
-        "DevTouchCameraMovementMode": "Classic",
-        "LoadCharacterAppearance": false,
-        "UserEmotesEnabled": false
-      },
-
       "StarterCharacterScripts": {
         "$path": "src/Build/StarterCharacterScripts"
       },

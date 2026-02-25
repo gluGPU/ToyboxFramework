@@ -16,7 +16,7 @@ type ReplicatedState_ClientData<T> = {
     _logger: Logger.Logger,
     _onChangedObservers: {[(newState: T?) -> ()]: boolean},
     _onDestroyHooks: {() -> ()},
-    _remote: RemoteEvent,
+    _remote: RemoteEvent | UnreliableRemoteEvent,
 
     Id: number,
     Name: string,
@@ -33,7 +33,7 @@ type ReplicatedState_ClientData<T> = {
 export type ReplicatedState_Client<T> = typeof(setmetatable({} :: ReplicatedState_ClientData<T>, ReplicatedState_Client))
 
 
-function ReplicatedState_Client.new<T>(id: number, name: string, remote: RemoteEvent, initialState: T?): ReplicatedState_Client<T>
+function ReplicatedState_Client.new<T>(id: number, name: string, remote: RemoteEvent | UnreliableRemoteEvent, initialState: T?): ReplicatedState_Client<T>
     logger:Print(string.format(
         "Create new ReplicatedState_Client - id: %i, name: %s, has init state: %*",
         id, name, initialState ~= nil
