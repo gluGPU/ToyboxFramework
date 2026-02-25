@@ -192,9 +192,6 @@ function Tick.Init(e: EngineTypes.Engine)
     
     rate = Tick.TickRate
     max = Tick.MaxTicks
-
-
-    warn(Tick.TickRate)
 end
 
 function Tick.ExecuteTickCallbacks(delta: number)
