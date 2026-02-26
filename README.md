@@ -2,7 +2,7 @@
 Unified game framework to be used across my game projects.
 
 ## Disclaimer
-Toybox is not a regular Roblox framework. If you aren't interested in keeping the game simulation completely inside of Lua, then Toybox is not for you. This framework mainly uses the Roblox engine for rendering / networking.
+Toybox is not a regular Roblox framework. If you aren't interested in keeping the game simulation completely inside of Lua, then Toybox is not for you. This framework mainly uses the Roblox engine for rendering / networking, but not much else.
 
 ## Goals
 - Performant manipulation of game entities through ECS.
