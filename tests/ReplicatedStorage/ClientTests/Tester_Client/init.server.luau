@@ -63,7 +63,7 @@ Engine.OnInitialized(function()
     local array = {}
     Replication.OnReplicatedStateCreated:Connect(function(rState)
         rState:ObserveState(function(newState)
-            warn(rState.Name.. "Client: ".. newState)
+            -- warn(rState.Name.. "Client: ".. newState)
 
             -- local n = 0
             -- local c: RBXScriptConnection? = nil

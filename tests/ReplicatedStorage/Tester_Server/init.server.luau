@@ -17,7 +17,7 @@ Engine.OnInitialized(function()
     local rState = Replication.Server.CreateReplicatedState("ReallyAwesome", Players:GetPlayers(), 0)
 
     rState:ObserveState(function(newState: number)
-        warn(rState.Name.. "Server: ".. newState)
+        -- warn(rState.Name.. "Server: ".. newState)
 
         -- local n = 0
         -- local c: RBXScriptConnection? = nil
