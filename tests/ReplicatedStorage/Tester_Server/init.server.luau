@@ -40,7 +40,7 @@ Engine.OnInitialized(function()
             task.wait(0.333)
 
             counter += 1
-            rState:ChangeState(counter)
+            rState:Set(counter)
         end
     end)
 

@@ -1,4 +1,9 @@
 return {
+    ReplicationAction = {
+        Set = 0,
+        Update = 1,
+    },
+
     TickPriority = {
         Default = 1000
     },

@@ -4,9 +4,7 @@
     2/21/26
     @gluGPU
 
-    TODO:
-    Re-implementation of World.luau from impulse, modified to
-    use entities and components
+    
 --]]
 
 local BaseService = require("./BaseService")

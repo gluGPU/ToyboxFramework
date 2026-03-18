@@ -5,7 +5,10 @@
     @gluGPU
 --]]
 
+local EngineEnums = require("../../EngineEnums")
 local Logger = require("../../Classes/Logger")
+
+local ReplicationAction = EngineEnums.ReplicationAction
 
 local logger = Logger.new("STATIC-ReplicatedState_Client")
 
@@ -20,7 +23,7 @@ type ReplicatedState_ClientData<T> = {
 
     Id: number,
     Name: string,
-    State: T?,
+    State: T,
 
     _remoteEventConn: RBXScriptConnection,
 
@@ -28,12 +31,13 @@ type ReplicatedState_ClientData<T> = {
 
     OnDestroying: (self: ReplicatedState_Client<T>, callback: () -> ()) -> (),
     ObserveState: (self: ReplicatedState_Client<T>, callback: (newState: T?) -> () -> ()) -> () -> (),
+    ObserveValue: (self: ReplicatedState_Client<T>, path: {string}, callback: (newValue: T?) -> () -> ()) -> () -> (),
 }
 
 export type ReplicatedState_Client<T> = typeof(setmetatable({} :: ReplicatedState_ClientData<T>, ReplicatedState_Client))
 
 
-function ReplicatedState_Client.new<T>(id: number, name: string, remote: RemoteEvent | UnreliableRemoteEvent, initialState: T?): ReplicatedState_Client<T>
+function ReplicatedState_Client.new<T>(id: number, name: string, remote: RemoteEvent | UnreliableRemoteEvent, initialState: T): ReplicatedState_Client<T>
     logger:Print(string.format(
         "Create new ReplicatedState_Client - id: %i, name: %s, has init state: %*",
         id, name, initialState ~= nil
@@ -54,10 +58,14 @@ function ReplicatedState_Client.new<T>(id: number, name: string, remote: RemoteE
     self.Name = name
     self.State = initialState
 
-    self._remoteEventConn = remote.OnClientEvent:Connect(function(newState: T?)
-        self.State = newState
-        for onChanged, _ in changedObservers do
-            onChanged(newState)
+    self._remoteEventConn = remote.OnClientEvent:Connect(function(action: number, newState: T)
+        if action == ReplicationAction.Set then
+            self.State = newState
+            for onChanged, _ in changedObservers do
+                onChanged(newState)
+            end
+        elseif action == ReplicationAction.Update then
+            -- TODO
         end
     end)
     
@@ -116,6 +124,11 @@ function ReplicatedState_Client.ObserveState<T>(self: ReplicatedState_Client<T>,
             cleaner = nil
         end
     end
+end
+
+
+function ReplicatedState_Client.ObserveValue<T>(self: ReplicatedState_Client<T>, path: {string}, callback: (newValue: any?) -> () -> ()): () -> ()
+    
 end
 
 

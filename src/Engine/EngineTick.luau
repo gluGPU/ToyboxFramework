@@ -201,20 +201,17 @@ function Tick.ExecuteTickCallbacks(delta: number)
     local speed = Tick.TickSpeed
     local accumulated = Tick._currentDelta + delta
 	local numTicks = math.clamp(CalculateTicks(accumulated, rate, speed), 0, max)
-	
-    local currentTick = Tick.CurrentTick
 
 	if numTicks > 0 then
 		for i = 1, numTicks do
+            Tick.CurrentTick += 1
+
 			for _, callback in array do
                 callback(rate)
             end
 
-			currentTick += 1
-            Tick.CurrentTick = currentTick
 		end
 		
-        Tick.CurrentTick = currentTick
         accumulated -= (numTicks * rate / speed)
 	end
 

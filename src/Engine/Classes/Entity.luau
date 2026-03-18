@@ -14,7 +14,7 @@ local Entity = {
     _MAX_ENTITIES = MAX_ENTITIES,
 
     EntityCount = 0,
-    AvailableEntities = table.create(MAX_ENTITIES, true),
+    AvailableEntities = table.create(MAX_ENTITIES),
     Components = table.create(MAX_ENTITIES)
 }
 
