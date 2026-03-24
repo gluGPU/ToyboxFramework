@@ -20,4 +20,8 @@ return {
     -- Max ticks to process per rendered frame. Helps prevent
     -- "spiral of death" issues.
     MAX_TICKS_PER_FRAME = 10,
+
+
+    -- // World.luau
+    MAX_ENTITIES = 1024,
 }

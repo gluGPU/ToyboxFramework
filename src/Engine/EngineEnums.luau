@@ -8,6 +8,12 @@ return {
         Default = 1000
     },
 
+    EcsStages = {
+        Process = 0,
+        Perform = 1,
+        Render = 2
+    },
+
     DebuggingLabels = {
         TICK_UPDATE_TICKING_CALLBACKS = "TOYBOX-UPDATE_TICK_CALLBACKS",
         TICK_UPDATE_INTERP_CALLBACKS = "TOYBOX-UPDATE_INTERP_CALLBACKS",
