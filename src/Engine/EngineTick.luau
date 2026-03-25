@@ -241,8 +241,10 @@ local renderArray = Tick._orderedCallbacksRender
 function Tick.ExecuteRenderCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_RENDER_STEP)
 
+    local tickSpeed = Tick.TickSpeed
+
     for _, callback in renderArray do
-        callback(delta)
+        callback(delta * tickSpeed)
     end
 
     debug.profileend()
