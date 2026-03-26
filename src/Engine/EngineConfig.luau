@@ -17,6 +17,9 @@ return {
     -- This should be a positive integer.
     TICK_RATE = 100,
 
+    -- Interpolate between render states.
+    TICK_INTERPOLATION = true,
+
     -- Max ticks to process per rendered frame. Helps prevent
     -- "spiral of death" issues.
     MAX_TICKS_PER_FRAME = 10,

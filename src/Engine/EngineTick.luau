@@ -1,3 +1,4 @@
+local Body = require("./Libraries/Impulse/luau-physics/Body")
 --!strict
 --[[
     EngineTick.luau
@@ -12,68 +13,25 @@ local Logger = require("./Classes/Logger")
 
 local DEFAULT_PRIORITY = EngineEnums.TickPriority.Default
 
+local UPDATE_INPUT_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_INPUT_CALLBACKS
 local UPDATE_TICKING_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_TICKING_CALLBACKS
 local UPDATE_INTERP_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_INTERP_CALLBACKS
 local UPDATE_RENDER_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_RENDER_CALLBACKS
+local TICK_RUN_INPUT_STEP = EngineEnums.DebuggingLabels.TICK_RUN_INPUT_STEP
 local TICK_RUN_TICK_STEP = EngineEnums.DebuggingLabels.TICK_RUN_TICK_STEP
 local TICK_RUN_INTERP_STEP = EngineEnums.DebuggingLabels.TICK_RUN_INTERP_STEP
 local TICK_RUN_RENDER_STEP = EngineEnums.DebuggingLabels.TICK_RUN_RENDER_STEP
 
 
-export type Tick = {
-    _namedCallbacksTicking: {[string]: {
-        Priority: number,
-        Callback: (delta: number, ...any?) -> (...any?)
-    }},
-
-    _namedCallbacksInterp: {[string]: {
-        Priority: number,
-        Callback: (alpha: number, ...any?) -> (...any?)
-    }},
-
-    _namedCallbacksRender: {[string]: {
-        Priority: number,
-        Callback: (delta: number, ...any?) -> (...any?)
-    }},
-
-    _orderedCallbacksTicking: {[number]: (delta: number, ...any?) -> (...any?)},
-    _orderedCallbacksInterp: {[number]: (alpha: number, ...any?) -> (...any?)},
-    _orderedCallbacksRender: {[number]: (delta: number, ...any?) -> (...any?)},
-
-    TickRate: number,
-    TickSpeed: number,
-    MaxTicks: number,
-
-    CurrentTick: number,
-    _currentDelta: number,
-
-    -- Methods
-    Init: (e: EngineTypes.Engine) -> (),
-
-    ExecuteTickCallbacks: (delta: number) -> (),
-    ExecuteInterpCallbacks: (delta: number) -> (),
-    ExecuteRenderCallbacks: (delta: number) -> (),
-
-    SetTickSpeed: (new: number) -> (),
-
-    BindToTick: (name: string, priority: number, callback: (delta: number, ...any?) -> (...any?)) -> (),
-    BindToInterpolation: (name: string, priority: number, callback: (alpha: number, ...any?) -> (...any?)) -> (),
-    BindToRender: (name: string, priority: number, callback: (delta: number, ...any?) -> (...any?)) -> (),
-
-    UnbindFromTick: (name: string, updateArray: boolean?) -> (),
-    UnbindFromInterpolation: (name: string, updateArray: boolean?) -> (),
-    UnbindFromRender: (name: string, updateArray: boolean?) -> (),
-
-    WaitInTicks: (ticks: number) -> (),
-    WaitInSeconds: (seconds: number) -> ()
-}
-
+export type Tick = EngineTypes.Tick
 
 local Tick = {} :: Tick
 
+Tick._namedCallbacksInput = {}
 Tick._namedCallbacksTicking = {}
 Tick._namedCallbacksInterp = {}
 Tick._namedCallbacksRender = {}
+Tick._orderedCallbacksInput = {}
 Tick._orderedCallbacksTicking = {}
 Tick._orderedCallbacksInterp = {}
 Tick._orderedCallbacksRender = {}
@@ -84,6 +42,8 @@ Tick.MaxTicks = 10
 
 Tick.CurrentTick = 0
 Tick._currentDelta = 0
+
+Tick.DoInterpolation = true
 
 local logger = Logger.new("Tick", true)
 
@@ -114,21 +74,6 @@ local function updateCallbacksTicking()
     end
 
     debug.profileend()
-
-    -- table.clear(ordered)
-
-	-- for name, data in named do
-	-- 	local i = 1
-	-- 	local priority = data.Priority
-		
-	-- 	for other, otherData in named do
-	-- 		if other ~= name and priority < otherData.Priority then
-	-- 			i += 1
-	-- 		end
-	-- 	end
-
-	-- 	ordered[i] = data.Callback
-	-- end
 end
 
 local temp2: {[number]: TempData} = {}
@@ -181,6 +126,33 @@ local function updateCallbacksRender()
     end
 end
 
+local temp4: {[number]: TempData} = {}
+local function updateCallbacksInput()
+    logger:Print("Rebuilding input callbacks...")
+
+    debug.profilebegin(UPDATE_INPUT_CALLBACKS)
+    local ordered = Tick._orderedCallbacksInput
+    local named = Tick._namedCallbacksInput
+
+    table.clear(temp4)
+    table.clear(ordered)
+
+    for _, data in named do
+        local t = {Priority = data.Priority, Callback = data.Callback}
+        table.insert(temp4, t)
+    end
+
+    table.sort(temp4, function(a: TempData, b: TempData)
+        return a.Priority < b.Priority
+    end)
+
+    for _, data in temp4 do
+        table.insert(ordered, data.Callback)
+    end
+
+    debug.profileend()
+end
+
 local array = Tick._orderedCallbacksTicking
 local rate = Tick.TickRate
 local max = Tick.MaxTicks
@@ -192,6 +164,21 @@ function Tick.Init(e: EngineTypes.Engine)
     
     rate = Tick.TickRate
     max = Tick.MaxTicks
+
+    Tick.DoInterpolation = e.Config.TICK_INTERPOLATION
+end
+
+local inputArray = Tick._orderedCallbacksInput
+function Tick.ExecuteInputCallbacks(delta: number)
+    debug.profilebegin(TICK_RUN_INPUT_STEP)
+
+    local tickSpeed = Tick.TickSpeed
+
+    for _, callback in inputArray do
+        callback(delta * tickSpeed)
+    end
+
+    debug.profileend()
 end
 
 function Tick.ExecuteTickCallbacks(delta: number)
@@ -226,12 +213,19 @@ function Tick.ExecuteInterpCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_INTERP_STEP)
 
     -- interpolation step
-    local accumulated = Tick._currentDelta
-	local alpha = accumulated / (rate / Tick.TickSpeed)
+    if Tick.DoInterpolation then
+        local accumulated = Tick._currentDelta
+        local alpha = accumulated / (rate / Tick.TickSpeed)
 
-	for _, callback in interpArray do
-		callback(alpha)
-	end
+        for _, callback in interpArray do
+            callback(alpha)
+        end
+    else
+        for _, callback in interpArray do
+            callback(1)
+        end
+    end
+    
 
     debug.profileend()
 end
@@ -332,6 +326,30 @@ function Tick.BindToRender(name: string, priority: number, callback: (delta: num
 end
 
 
+function Tick.BindToInput(name: string, priority: number, callback: (delta: number, ...any?) -> (...any?))
+    local t = Tick._namedCallbacksInput
+
+    if not priority then
+        priority = DEFAULT_PRIORITY
+    end
+
+    local existing = t[name]
+    if existing then
+        existing.Priority = priority
+        existing.Callback = callback
+
+        updateCallbacksInput()
+    else
+        t[name] = {
+            Priority = priority,
+            Callback = callback
+        }
+
+        updateCallbacksInput()
+    end
+end
+
+
 function Tick.UnbindFromTick(name: string, updateArray: boolean?)
     local t = Tick._namedCallbacksTicking
     local existing = t[name]
@@ -370,6 +388,19 @@ function Tick.UnbindFromRender(name: string, updateArray: boolean?)
 
     if updateArray then
         updateCallbacksRender()
+    end
+end
+
+function Tick.UnbindFromInput(name: string, updateArray: boolean?)
+    local t = Tick._namedCallbacksInput
+    local existing = t[name]
+    if existing then
+        table.clear(existing)
+        t[name] = nil
+    end
+
+    if updateArray then
+        updateCallbacksInput()
     end
 end
 

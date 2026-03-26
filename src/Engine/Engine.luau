@@ -8,6 +8,7 @@
 
 -- Dependencies
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local Logger = require("./Classes/Logger")
 local Config = require("./EngineConfig")
@@ -86,6 +87,7 @@ function Engine.OnInitialized(callback: (Engine) -> ((Engine) -> ()?))
 end
 
 
+local executeInput = Tick.ExecuteInputCallbacks
 local executeTick = Tick.ExecuteTickCallbacks
 local executeInterp = Tick.ExecuteInterpCallbacks
 local executeRender = Tick.ExecuteRenderCallbacks
@@ -100,6 +102,7 @@ function Engine.CreateUpdateLoop()
     local c1, c2 = nil, nil
 
     c1 = RunService.PreSimulation:Connect(function(delta: number)
+        executeInput(delta)
         executeTick(delta)
     end)
 
@@ -141,6 +144,7 @@ function Engine.StepUpdateOnce()
     engineLogger:Warn("StepUpdateOnce called")
 
     c1 = RunService.PreSimulation:Connect(function(delta: number)
+        executeInput(delta)
         executeTick(delta)
 
         c1:Disconnect()
