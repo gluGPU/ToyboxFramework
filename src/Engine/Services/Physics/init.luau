@@ -24,9 +24,9 @@ Physics.World = World
 
 
 function Physics.Init(e: EngineTypes.Engine)
-    -- e.Tick.BindToTick("Toybox-StepImpulse", 1500, function(delta: number)
-    --     World.step(delta)
-    -- end)
+    e.Tick.BindToTick("Toybox-StepImpulse", 1500, function(delta: number)
+        World.step(delta)
+    end)
 
     Physics.Initialized = true
     Physics._executeInitHooks()

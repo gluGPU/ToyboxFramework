@@ -13,6 +13,7 @@ local UserInputService = game:GetService("UserInputService")
 local Logger = require("./Classes/Logger")
 local Config = require("./EngineConfig")
 local Services = require("./EngineServices")
+local Stats = require("./EngineStats")
 local Tick = require("./EngineTick")
 local Types = require("./EngineTypes")
 
@@ -34,6 +35,7 @@ Engine.Services = Services
 Engine.Config = Config
 Engine.Types = Types
 Engine.Tick = Tick
+Engine.Stats = Stats
 
 Engine.IsUpdateLoopActive = false
 Engine._tickConn = nil :: RBXScriptConnection?
@@ -48,7 +50,7 @@ function Engine.Init(configOverrides: {[string]: any}?)
     local config = Engine.Config
     local services = Engine.Services
 
-    if isStudio and configOverrides then
+    if configOverrides then
         for i, v in configOverrides do
             config[i] = v
         end
@@ -101,14 +103,31 @@ function Engine.CreateUpdateLoop()
 
     local c1, c2 = nil, nil
 
+    local input, tick, interp, render = 0, 0, 0, 0
     c1 = RunService.PreSimulation:Connect(function(delta: number)
+        -- Input
+        local t1 = os.clock()
         executeInput(delta)
+        input = os.clock() - t1
+
+        -- Tick
+        local t2 = os.clock()
         executeTick(delta)
+        tick = os.clock() - t2
     end)
 
     c2 = RunService.PreRender:Connect(function(delta: number)
+        -- Interpolation
+        local t1 = os.clock()
         executeInterp(delta)
+        interp = os.clock() - t1
+
+        -- Render
+        local t2 = os.clock()
         executeRender(delta)
+        render = os.clock() - t2
+
+        Stats.PushTimes(input, tick, interp, render)
     end)
 
     Engine._tickConn = c1
@@ -143,17 +162,34 @@ function Engine.StepUpdateOnce()
 
     engineLogger:Warn("StepUpdateOnce called")
 
+    local input, tick, interp, render = 0, 0, 0, 0
     c1 = RunService.PreSimulation:Connect(function(delta: number)
+        -- Input
+        local t1 = os.clock()
         executeInput(delta)
+        input = os.clock() - t1
+
+        -- Tick
+        local t2 = os.clock()
         executeTick(delta)
+        tick = os.clock() - t2
 
         c1:Disconnect()
         c1 = nil
     end)
     
     c2 = RunService.PostSimulation:Connect(function(delta: number)
+        -- Interpolation
+        local t1 = os.clock()
         executeInterp(delta)
+        interp = os.clock() - t1
+
+        -- Render
+        local t2 = os.clock()
         executeRender(delta)
+        render = os.clock() - t2
+
+        Stats.PushTimes(input, tick, interp, render)
 
         c2:Disconnect()
         c2 = nil
