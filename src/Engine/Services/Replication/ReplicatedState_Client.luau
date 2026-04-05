@@ -59,12 +59,12 @@ function ReplicatedState_Client.new<T>(id: number, name: string, remote: RemoteE
     self.State = initialState
 
     self._remoteEventConn = remote.OnClientEvent:Connect(function(action: number, newState: T)
-        if action == ReplicationAction.Set then
+        if action == ReplicationAction.Set.Value then
             self.State = newState
             for onChanged, _ in changedObservers do
                 onChanged(newState)
             end
-        elseif action == ReplicationAction.Update then
+        elseif action == ReplicationAction.Update.Value then
             -- TODO
         end
     end)

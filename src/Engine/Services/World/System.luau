@@ -18,10 +18,8 @@ type SystemData = {
 
 export type SystemObject = typeof(setmetatable({} :: SystemData, System))
 
-function System.new(stage: index<typeof(EngineEnums.EcsStages), keyof<typeof(EngineEnums.EcsStages)>>): SystemObject
+function System.new(stage: EngineEnums.EnumItem<"EcsStages", number>): SystemObject
     local self = setmetatable({} :: SystemData, System)
-
-    
 
     return self
 end

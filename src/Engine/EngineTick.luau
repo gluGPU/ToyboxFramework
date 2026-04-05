@@ -1,4 +1,3 @@
-local Body = require("./Libraries/Impulse/luau-physics/Body")
 --!strict
 --[[
     EngineTick.luau
@@ -13,14 +12,14 @@ local Logger = require("./Classes/Logger")
 
 local DEFAULT_PRIORITY = EngineEnums.TickPriority.Default
 
-local UPDATE_INPUT_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_INPUT_CALLBACKS
-local UPDATE_TICKING_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_TICKING_CALLBACKS
-local UPDATE_INTERP_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_INTERP_CALLBACKS
-local UPDATE_RENDER_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_RENDER_CALLBACKS
-local TICK_RUN_INPUT_STEP = EngineEnums.DebuggingLabels.TICK_RUN_INPUT_STEP
-local TICK_RUN_TICK_STEP = EngineEnums.DebuggingLabels.TICK_RUN_TICK_STEP
-local TICK_RUN_INTERP_STEP = EngineEnums.DebuggingLabels.TICK_RUN_INTERP_STEP
-local TICK_RUN_RENDER_STEP = EngineEnums.DebuggingLabels.TICK_RUN_RENDER_STEP
+local UPDATE_INPUT_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_INPUT_CALLBACKS.Value
+local UPDATE_TICKING_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_TICKING_CALLBACKS.Value
+local UPDATE_INTERP_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_INTERP_CALLBACKS.Value
+local UPDATE_RENDER_CALLBACKS = EngineEnums.DebuggingLabels.TICK_UPDATE_RENDER_CALLBACKS.Value
+local TICK_RUN_INPUT_STEP = EngineEnums.DebuggingLabels.TICK_RUN_INPUT_STEP.Value
+local TICK_RUN_TICK_STEP = EngineEnums.DebuggingLabels.TICK_RUN_TICK_STEP.Value
+local TICK_RUN_INTERP_STEP = EngineEnums.DebuggingLabels.TICK_RUN_INTERP_STEP.Value
+local TICK_RUN_RENDER_STEP = EngineEnums.DebuggingLabels.TICK_RUN_RENDER_STEP.Value
 
 
 export type Tick = EngineTypes.Tick
@@ -258,7 +257,7 @@ function Tick.BindToTick(name: string, priority: number, callback: (delta: numbe
     local t = Tick._namedCallbacksTicking
 
     if not priority then
-        priority = DEFAULT_PRIORITY
+        priority = DEFAULT_PRIORITY.Value
     end
 
     local existing = t[name]
@@ -282,7 +281,7 @@ function Tick.BindToInterpolation(name: string, priority: number, callback: (alp
     local t = Tick._namedCallbacksInterp
 
     if not priority then
-        priority = DEFAULT_PRIORITY
+        priority = DEFAULT_PRIORITY.Value
     end
 
     local existing = t[name]
@@ -306,7 +305,7 @@ function Tick.BindToRender(name: string, priority: number, callback: (delta: num
     local t = Tick._namedCallbacksRender
 
     if not priority then
-        priority = DEFAULT_PRIORITY
+        priority = DEFAULT_PRIORITY.Value
     end
 
     local existing = t[name]
@@ -330,7 +329,7 @@ function Tick.BindToInput(name: string, priority: number, callback: (delta: numb
     local t = Tick._namedCallbacksInput
 
     if not priority then
-        priority = DEFAULT_PRIORITY
+        priority = DEFAULT_PRIORITY.Value
     end
 
     local existing = t[name]
