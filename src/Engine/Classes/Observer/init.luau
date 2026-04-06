@@ -63,8 +63,8 @@ function Observer.Observe<Object, ValueType>(
     return observerCleanup
 end
 
-function Observer.CreateObserverFn(keyToObserve: string)
-    --TODO
+function Observer.CreateObserverFn(objectToObserve, keyToObserve: string)
+    return Observer.Observe(objectToObserve, keyToObserve, callback, valueGuard)
 end
 
 return Observer

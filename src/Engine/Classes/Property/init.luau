@@ -7,8 +7,6 @@
     The Property class allows you to create easily observable properties for your own classes.
 --]]
 
-local Observer = require("./Observer")
-
 
 --[=[
     @class Property
@@ -114,6 +112,47 @@ end
     @param valueGuard (value: ValueType) -> boolean -- Gets fired before your observer function to see if the value is valid. If this returns <code>true</code>, then your observer will run. Does not affect cleanup.
     @return () -> () -- Cleaner function to stop observing the <code>Property</code>.
 ]=]
-Property.Observe = Observer.Observe
+function Property.Observe<ValueType>(self: Property<ValueType>, callback: (value: ValueType) -> () -> (), valueGuard: (value: ValueType?) -> boolean): () -> ()
+    local cleaner: () -> ()? = nil
+    local currentId = 0
+    local connected: boolean? = true
+
+    local function observe(value: ValueType?)
+        if cleaner then
+            cleaner()
+            cleaner = nil
+        end
+
+        currentId += 1
+        local thisId = currentId
+
+        if valueGuard(value) then
+            local newCleaner = callback(value)
+            if thisId == currentId and connected then
+                cleaner = newCleaner
+            else
+                newCleaner()
+            end
+        end
+    end
+
+    self._observers[observe] = true
+    observe(self.Value)
+
+    local function observerCleanup()
+        if connected then
+            connected = nil
+            self._observers[observe] = nil
+            if cleaner then
+                cleaner()
+                cleaner = nil
+            end
+        end
+    end
+
+    table.insert(self._observerCleanups, observerCleanup)
+
+    return observerCleanup
+end
 
 return Property
