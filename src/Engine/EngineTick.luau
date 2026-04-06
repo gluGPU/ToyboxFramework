@@ -21,28 +21,39 @@ local TICK_RUN_TICK_STEP = EngineEnums.DebuggingLabels.TICK_RUN_TICK_STEP.Value
 local TICK_RUN_INTERP_STEP = EngineEnums.DebuggingLabels.TICK_RUN_INTERP_STEP.Value
 local TICK_RUN_RENDER_STEP = EngineEnums.DebuggingLabels.TICK_RUN_RENDER_STEP.Value
 
+type DeltaCallbacks = {[string]: {
+    Priority: number,
+    Callback: (delta: number, ...any?) -> (...any?)
+}}
 
-export type Tick = EngineTypes.Tick
+type DeltaCallbacksOrdered = {[number]: (delta: number, ...any?) -> (...any?)}
 
-local Tick = {} :: Tick
+type AlphaCallbacks = {[string]: {
+    Priority: number,
+    Callback: (alpha: number, ...any?) -> (...any?)
+}}
 
-Tick._namedCallbacksInput = {}
-Tick._namedCallbacksTicking = {}
-Tick._namedCallbacksInterp = {}
-Tick._namedCallbacksRender = {}
-Tick._orderedCallbacksInput = {}
-Tick._orderedCallbacksTicking = {}
-Tick._orderedCallbacksInterp = {}
-Tick._orderedCallbacksRender = {}
+type AlphaCallbacksOrdered = {[number]: (alpha: number, ...any?) -> (...any?)}
 
-Tick.TickRate = 1 / 100
-Tick.TickSpeed = 1
-Tick.MaxTicks = 10
+local Tick = {}
 
-Tick.CurrentTick = 0
-Tick._currentDelta = 0
+local namedCallbacksInput = {} :: DeltaCallbacks
+local namedCallbacksTicking = {} :: DeltaCallbacks
+local namedCallbacksInterp = {} :: AlphaCallbacks
+local namedCallbacksRender = {} :: DeltaCallbacks
+local orderedCallbacksInput = {}  :: DeltaCallbacksOrdered
+local orderedCallbacksTicking = {} :: DeltaCallbacksOrdered
+local orderedCallbacksInterp = {} :: AlphaCallbacksOrdered
+local orderedCallbacksRender = {} :: DeltaCallbacksOrdered
 
-Tick.DoInterpolation = true
+local tickRate = 1 / 100
+local tickSpeed = 1
+local maxTicks = 10
+
+local currentTick = 0
+local currentDelta = 0
+
+local doInterpolation = true
 
 local logger = Logger.new("Tick", true)
 
@@ -53,8 +64,8 @@ local function updateCallbacksTicking()
     logger:Print("Rebuilding ticking callbacks...")
 
     debug.profilebegin(UPDATE_TICKING_CALLBACKS)
-    local ordered = Tick._orderedCallbacksTicking
-    local named = Tick._namedCallbacksTicking
+    local ordered = orderedCallbacksTicking
+    local named = namedCallbacksTicking
 
     table.clear(temp)
     table.clear(ordered)
@@ -80,8 +91,8 @@ local function updateCallbacksInterp()
     logger:Print("Rebuilding interpolation callbacks...")
 
     debug.profilebegin(UPDATE_INTERP_CALLBACKS)
-    local ordered = Tick._orderedCallbacksInterp
-    local named = Tick._namedCallbacksInterp
+    local ordered = orderedCallbacksInterp
+    local named = namedCallbacksInterp
 
     table.clear(temp2)
     table.clear(ordered)
@@ -98,6 +109,8 @@ local function updateCallbacksInterp()
     for _, data in temp2 do
         table.insert(ordered, data.Callback)
     end
+
+    debug.profileend()
 end
 
 local temp3: {[number]: TempData} = {}
@@ -105,8 +118,8 @@ local function updateCallbacksRender()
     logger:Print("Rebuilding rendering callbacks...")
 
     debug.profilebegin(UPDATE_RENDER_CALLBACKS)
-    local ordered = Tick._orderedCallbacksRender
-    local named = Tick._namedCallbacksRender
+    local ordered = orderedCallbacksRender
+    local named = namedCallbacksRender
 
     table.clear(temp3)
     table.clear(ordered)
@@ -123,6 +136,8 @@ local function updateCallbacksRender()
     for _, data in temp3 do
         table.insert(ordered, data.Callback)
     end
+
+    debug.profileend()
 end
 
 local temp4: {[number]: TempData} = {}
@@ -130,8 +145,8 @@ local function updateCallbacksInput()
     logger:Print("Rebuilding input callbacks...")
 
     debug.profilebegin(UPDATE_INPUT_CALLBACKS)
-    local ordered = Tick._orderedCallbacksInput
-    local named = Tick._namedCallbacksInput
+    local ordered = orderedCallbacksInput
+    local named = namedCallbacksInput
 
     table.clear(temp4)
     table.clear(ordered)
@@ -152,28 +167,47 @@ local function updateCallbacksInput()
     debug.profileend()
 end
 
-local array = Tick._orderedCallbacksTicking
-local rate = Tick.TickRate
-local max = Tick.MaxTicks
+
+
 function Tick.Init(e: EngineTypes.Engine)
     logger:Print("Initializing...")
 
-    Tick.TickRate = 1 / e.Config.TICK_RATE
-    Tick.MaxTicks = e.Config.MAX_TICKS_PER_FRAME
-    
-    rate = Tick.TickRate
-    max = Tick.MaxTicks
+    tickRate = 1 / e.Config.TICK_RATE
+    maxTicks = e.Config.MAX_TICKS_PER_FRAME
 
-    Tick.DoInterpolation = e.Config.TICK_INTERPOLATION
+    doInterpolation = e.Config.TICK_INTERPOLATION
 end
 
-local inputArray = Tick._orderedCallbacksInput
+
+function Tick.GetTickRate(): typeof(tickRate)
+    return tickRate
+end
+
+
+function Tick.GetTickSpeed(): typeof(tickSpeed)
+    return tickSpeed
+end
+
+
+function Tick.GetCurrentTick(): typeof(currentTick)
+    return currentTick
+end
+
+
+function Tick.IsInterpolationActive(): typeof(doInterpolation)
+    return doInterpolation
+end
+
+
+function Tick.SetInterpolationActive(isActive: boolean)
+    doInterpolation = isActive
+end
+
+
 function Tick.ExecuteInputCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_INPUT_STEP)
 
-    local tickSpeed = Tick.TickSpeed
-
-    for _, callback in inputArray do
+    for _, callback in orderedCallbacksInput do
         callback(delta * tickSpeed)
     end
 
@@ -184,43 +218,40 @@ function Tick.ExecuteTickCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_TICK_STEP)
 
     -- simulation step
-    local speed = Tick.TickSpeed
-    local accumulated = Tick._currentDelta + delta
-	local numTicks = math.clamp(CalculateTicks(accumulated, rate, speed), 0, max)
+    local accumulated = currentDelta + delta
+	local numTicks = math.clamp(CalculateTicks(accumulated, tickRate, tickSpeed), 0, maxTicks)
 
 	if numTicks > 0 then
 		for i = 1, numTicks do
-            Tick.CurrentTick += 1
+            currentTick += 1
 
-			for _, callback in array do
-                callback(rate)
+			for _, callback in orderedCallbacksTicking do
+                callback(tickRate)
             end
 
 		end
 		
-        accumulated -= (numTicks * rate / speed)
+        accumulated -= (numTicks * tickRate / tickSpeed)
 	end
 
-    Tick._currentDelta = accumulated
+    currentDelta = accumulated
 
     debug.profileend()
 end
 
 
-local interpArray = Tick._orderedCallbacksInterp
 function Tick.ExecuteInterpCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_INTERP_STEP)
 
     -- interpolation step
-    if Tick.DoInterpolation then
-        local accumulated = Tick._currentDelta
-        local alpha = accumulated / (rate / Tick.TickSpeed)
+    if doInterpolation then
+        local alpha = currentDelta / (tickRate / tickSpeed)
 
-        for _, callback in interpArray do
+        for _, callback in orderedCallbacksInterp do
             callback(alpha)
         end
     else
-        for _, callback in interpArray do
+        for _, callback in orderedCallbacksInterp do
             callback(1)
         end
     end
@@ -230,13 +261,10 @@ function Tick.ExecuteInterpCallbacks(delta: number)
 end
 
 
-local renderArray = Tick._orderedCallbacksRender
 function Tick.ExecuteRenderCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_RENDER_STEP)
 
-    local tickSpeed = Tick.TickSpeed
-
-    for _, callback in renderArray do
+    for _, callback in orderedCallbacksRender do
         callback(delta * tickSpeed)
     end
 
@@ -244,30 +272,34 @@ function Tick.ExecuteRenderCallbacks(delta: number)
 end
 
 
--- Do not set tickspeed to 0 for pausing, you should
--- stop the engine loop entirely to pause
+--[=[
+    Sets how often ticks will occur each frame. 1 is fullspeed, 0.5 is halfspeed, and so on.
+    Tick speed must be greater than zero. If you want to pause simulation, you should call Engine.DestroyUpdateLoop().
+
+    @param new number -- The new tick speed. This must be a positive value.
+]=]
 function Tick.SetTickSpeed(new: number)
-    local old = Tick.TickSpeed
-    Tick._currentDelta *= (old / new)
-    Tick.TickSpeed = new
+    assert(new > 0, `TickSpeed must be a positive value.`)
+
+    local old = tickSpeed
+    currentDelta *= (old / new)
+    tickSpeed = new
 end
 
 
 function Tick.BindToTick(name: string, priority: number, callback: (delta: number, ...any?) -> (...any?))
-    local t = Tick._namedCallbacksTicking
-
     if not priority then
         priority = DEFAULT_PRIORITY.Value
     end
 
-    local existing = t[name]
+    local existing = namedCallbacksTicking[name]
     if existing then
         existing.Priority = priority
         existing.Callback = callback
 
         updateCallbacksTicking()
     else
-        t[name] = {
+        namedCallbacksTicking[name] = {
             Priority = priority,
             Callback = callback
         }
@@ -278,20 +310,18 @@ end
 
 
 function Tick.BindToInterpolation(name: string, priority: number, callback: (alpha: number, ...any?) -> (...any?))
-    local t = Tick._namedCallbacksInterp
-
     if not priority then
         priority = DEFAULT_PRIORITY.Value
     end
 
-    local existing = t[name]
+    local existing = namedCallbacksInterp[name]
     if existing then
         existing.Priority = priority
         existing.Callback = callback
 
         updateCallbacksInterp()
     else
-        t[name] = {
+        namedCallbacksInterp[name] = {
             Priority = priority,
             Callback = callback
         }
@@ -302,20 +332,18 @@ end
 
 
 function Tick.BindToRender(name: string, priority: number, callback: (delta: number, ...any?) -> (...any?))
-    local t = Tick._namedCallbacksRender
-
     if not priority then
         priority = DEFAULT_PRIORITY.Value
     end
 
-    local existing = t[name]
+    local existing = namedCallbacksRender[name]
     if existing then
         existing.Priority = priority
         existing.Callback = callback
 
         updateCallbacksRender()
     else
-        t[name] = {
+        namedCallbacksRender[name] = {
             Priority = priority,
             Callback = callback
         }
@@ -326,20 +354,18 @@ end
 
 
 function Tick.BindToInput(name: string, priority: number, callback: (delta: number, ...any?) -> (...any?))
-    local t = Tick._namedCallbacksInput
-
     if not priority then
         priority = DEFAULT_PRIORITY.Value
     end
 
-    local existing = t[name]
+    local existing = namedCallbacksInput[name]
     if existing then
         existing.Priority = priority
         existing.Callback = callback
 
         updateCallbacksInput()
     else
-        t[name] = {
+        namedCallbacksInput[name] = {
             Priority = priority,
             Callback = callback
         }
@@ -350,11 +376,9 @@ end
 
 
 function Tick.UnbindFromTick(name: string, updateArray: boolean?)
-    local t = Tick._namedCallbacksTicking
-    local existing = t[name]
+    local existing = namedCallbacksTicking[name]
     if existing then
-        table.clear(existing)
-        t[name] = nil
+        namedCallbacksTicking[name] = nil
     end
 
     if updateArray then
@@ -364,11 +388,9 @@ end
 
 
 function Tick.UnbindFromInterpolation(name: string, updateArray: boolean?)
-    local t = Tick._namedCallbacksInterp
-    local existing = t[name]
+    local existing = namedCallbacksInterp[name]
     if existing then
-        table.clear(existing)
-        t[name] = nil
+        namedCallbacksInterp[name] = nil
     end
 
     if updateArray then
@@ -378,11 +400,9 @@ end
 
 
 function Tick.UnbindFromRender(name: string, updateArray: boolean?)
-    local t = Tick._namedCallbacksRender
-    local existing = t[name]
+    local existing = namedCallbacksRender[name]
     if existing then
-        table.clear(existing)
-        t[name] = nil
+        namedCallbacksRender[name] = nil
     end
 
     if updateArray then
@@ -391,11 +411,9 @@ function Tick.UnbindFromRender(name: string, updateArray: boolean?)
 end
 
 function Tick.UnbindFromInput(name: string, updateArray: boolean?)
-    local t = Tick._namedCallbacksInput
-    local existing = t[name]
+    local existing = namedCallbacksInput[name]
     if existing then
-        table.clear(existing)
-        t[name] = nil
+        namedCallbacksInput[name] = nil
     end
 
     if updateArray then
