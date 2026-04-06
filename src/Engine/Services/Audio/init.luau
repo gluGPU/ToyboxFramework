@@ -9,19 +9,18 @@ local SoundService = game:GetService("SoundService")
 
 local AudioStems = require("@self/AudioStems")
 local BaseService = require("./BaseService")
+local EngineEnums = require("../EngineEnums")
 local EngineTypes = require("../EngineTypes")
 local Logger = require("../Classes/Logger")
 
 export type AudioStems = AudioStems.AudioStems
-export type AudioGroup = "Sound" | "Music" | "Ambient" | "Voice"
-local AUDIO_GROUPS: {AudioGroup} = {"Sound", "Music", "Ambient", "Voice"}
-
+export type AudioGroup = typeof(EngineEnums.AudioGroups.Ambient)
 
 export type Audio = {
     _output: AudioDeviceOutput,
 
     SoundGroups: {
-        [AudioGroup]: SoundGroup
+        [EngineEnums.EnumItem<"AudioGroup", number>]: SoundGroup
     },
 
     ConvertIdsToPlayers: (ids: {[string]: string}) -> ({[string]: AudioPlayer}),
@@ -33,6 +32,10 @@ export type Audio = {
 }
 
 local logger = Logger.new("Audio", true)
+
+--[=[
+    @class Audio
+]=]
 local Audio = BaseService.new() :: BaseService.BaseService & Audio
 
 local output = Instance.new("AudioDeviceOutput")
@@ -41,12 +44,12 @@ Audio._output = output
 
 local groups = {}
 Audio.SoundGroups = groups
-for _, name in AUDIO_GROUPS do
+for _, enum in EngineEnums.AudioGroups:GetEnumItems() do
     local soundGroup = Instance.new("SoundGroup")
     soundGroup.Volume = 1
     soundGroup.Parent = SoundService
 
-    groups[name] = soundGroup
+    groups[enum] = soundGroup
 end
 
 function Audio.Init()

@@ -19,6 +19,15 @@ local lastUpdate, numUpdates = os.clock(), 0
 local curInput, curTick, curInterp, curRender = 0, 0, 0, 0
 local lastInput, lastTick, lastInterp, lastRender = 0, 0, 0, 0
 
+
+--[=[
+    Adds the specified execution times to the rolling average. These times aren't reflected automatically.
+
+    @param input number -- Execution time for input phase.
+    @param tick number -- Execution time for tick phase.
+    @param interp number -- Execution time for interpolation phase.
+    @param render number -- Execution time for render phase.
+]=]
 function Stats.PushTimes(input: number, tick: number, interp: number, render: number)
     numUpdates += 1
     curInput += input
@@ -27,6 +36,12 @@ function Stats.PushTimes(input: number, tick: number, interp: number, render: nu
     curRender += render
 end
 
+
+--[=[
+    Returns a tuple of the rolling average execution time in this order: input, tick, interp, render.
+
+    @return Tuple -- Average execution times for input, tick, interpolation, and render.
+]=]
 function Stats.GetAvgTimes(): (number, number, number, number)
     local current = os.clock()
     if current - lastUpdate > Stats.UpdateFrequency then

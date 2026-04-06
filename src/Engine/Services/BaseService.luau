@@ -20,6 +20,11 @@ export type BaseService = {
 }
 
 
+--[=[
+    Creates a new <code>BaseService</code> table.
+
+    @return service BaseService -- A table containing the essentials for a service in Toybox.
+]=]
 function BaseService.new(): BaseService
     local t = {} :: BaseService
     t.Initialized = false

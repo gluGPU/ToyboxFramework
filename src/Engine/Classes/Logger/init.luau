@@ -23,6 +23,10 @@ local isStudio = RunService:IsStudio()
 local assertLevel = 2
 local assertOptions = "ln"
 
+
+--[=[
+    @class Logger
+]=]
 local Logger = {}
 Logger.__index = Logger
 
@@ -45,6 +49,12 @@ type LoggerData = {
 export type Logger = typeof(setmetatable({} :: LoggerData, Logger))
 
 
+--[=[
+    Instantiates a new <code>Logger</code>.
+
+    @param loggerId string -- The identifier of the <code>Logger</code>.
+    @param isStudioOnly boolean? -- If <code>true</code>, the <code>Logger</code> will only print when running in Studio.
+]=]
 function Logger.new(loggerId: string, isStudioOnly: boolean?): Logger
     local self: Logger = setmetatable({} :: LoggerData, Logger)
 
@@ -56,12 +66,21 @@ function Logger.new(loggerId: string, isStudioOnly: boolean?): Logger
 end
 
 
+--[=[
+    Destroys the Logger.
+]=]
 function Logger.Destroy(self)
     setmetatable(self, nil)
     table.clear(self)
 end
 
 
+--[=[
+    Performs an assertion. If the given value doesn't evaluate to <code>true</code> or it is <code>nil</code>, then an error will be produced.
+
+    @param v T -- The value to assert. If the value is <code>false</code> or <code>nil</code>, an error will be produced.
+    @param msg string -- The message to display in the output if the assertion doesn't pass.
+]=]
 function Logger.Assert<T>(self: Logger, v: T, msg: string)
     if self.IsStudioOnly and not isStudio then
         return
@@ -75,6 +94,11 @@ function Logger.Assert<T>(self: Logger, v: T, msg: string)
 end
 
 
+--[=[
+    Intended only for methods of Toybox services. Given the table, if <code>t.Initialized</code> is <code>false</code>, then an error is produced.
+
+    @param t {Initialized: boolean} -- A table with the <code>Initialized</code> key.
+]=]
 function Logger.AssertIfUninitialized(self: Logger, t: {Initialized: boolean})
     if not t.Initialized then
         local tLine, tName = debug.info(assertLevel, assertOptions)
@@ -86,6 +110,9 @@ function Logger.AssertIfUninitialized(self: Logger, t: {Initialized: boolean})
 end
 
 
+--[=[
+    Quick method to assert for client-sided methods. If not running on the client, then an error is produced.
+]=]
 function Logger.AssertIfNotClient(self: Logger)
     if not isClient then
         local line, name = debug.info(assertLevel, assertOptions)
@@ -96,6 +123,9 @@ function Logger.AssertIfNotClient(self: Logger)
 end
 
 
+--[=[
+    Quick method to assert for server-sided methods. If not running on the server, then an error is produced.
+]=]
 function Logger.AssertIfNotServer(self: Logger)
     if not isServer then
         local line, name = debug.info(assertLevel, assertOptions)
@@ -106,6 +136,11 @@ function Logger.AssertIfNotServer(self: Logger)
 end
 
 
+--[=[
+    Prints to the engine output with the specified arguments. If <code>Logger.IsStudioOnly</code> is <code>true</code> then this will only show up in Studio.
+
+    @param params Tuple -- Values to be output to the console.
+]=]
 function Logger.Print<T>(self: Logger, ...: T)
     if self.IsStudioOnly and not isStudio then
         return
@@ -115,6 +150,11 @@ function Logger.Print<T>(self: Logger, ...: T)
 end
 
 
+--[=[
+    Prints to the engine output with the specified arguments with special formatting. If <code>Logger.IsStudioOnly</code> is <code>true</code> then this will only show up in Studio.
+
+    @param params Tuple -- Values to be output to the console.
+]=]
 function Logger.Warn<T>(self: Logger, ...: T)
     if self.IsStudioOnly and not isStudio then
         return
