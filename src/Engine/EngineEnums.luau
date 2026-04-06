@@ -3,55 +3,10 @@
     EngineEnums.luau
 --]]
 
-local EnumItem = {}
-EnumItem.__index = EnumItem
+local Enum = require("./Classes/Enum")
 
-local Enum = {}
-Enum.__index = Enum
-
-type EnumItemData<EnumType, ValueType> = {
-    read Name: string,
-    read EnumType: EnumType,
-    read Value: ValueType,
-}
-
-
-type EnumData<EnumType, Keys, ValueType> = {
-    [Keys]: EnumItem<EnumType, ValueType>,
-
-    read EnumType: EnumType,
-    read GetEnumItems: (self: Enum<EnumType, Keys, ValueType>) -> {},
-}
-
-export type EnumItem<EnumType, ValueType> = typeof(setmetatable({} :: EnumItemData<EnumType, ValueType>, EnumItem))
-export type Enum<EnumType, Keys, ValueType> = typeof(setmetatable({} :: EnumData<EnumType, Keys, ValueType>, Enum))
-
-
-function EnumItem.new<EnumType, ValueType>(name: string, enumType: EnumType, value: ValueType): EnumItem<EnumType, ValueType>
-    local self = setmetatable({
-        Name = name,
-        EnumType = enumType,
-        Value = value
-    } :: EnumItemData<EnumType, ValueType>, EnumItem)
-
-    table.freeze(self)
-    return self
-end
-
-
-function Enum.new<EnumType, Keys, ValueType>(enumType: EnumType, enumData: {[Keys]: ValueType}): Enum<EnumType, Keys, ValueType>
-    local self = setmetatable({
-        EnumType = enumType
-    } :: EnumData<EnumType, Keys, ValueType>, Enum)
-    
-    for key, value in enumData do
-        self[key] = EnumItem.new(key, enumType, value)
-    end
-
-    table.freeze(self)
-    return self
-end
-
+export type Enum<EnumType, Keys, ValueType> = Enum.Enum<EnumType, Keys, ValueType>
+export type EnumItem<EnumType, ValueType> = Enum.EnumItem<EnumType, ValueType>
 
 -- enums
 local ReplicationAction = {
@@ -88,10 +43,13 @@ local DebuggingLabels = {
 }
 
 
-return {
+local enums = {
     ReplicationAction = Enum.new("ReplicationAction", ReplicationAction) :: Enum<"ReplicationAction", keyof<typeof(ReplicationAction)>, number>,
     TickPriority = Enum.new("TickPriority", TickPriority) :: Enum<"TickPriority", keyof<typeof(TickPriority)>, number>,
     EcsStages = Enum.new("EcsStages", EcsStages) :: Enum<"EcsStages", keyof<typeof(EcsStages)>, number>,
     AudioGroups = Enum.new("AudioGroups", AudioGroups) :: Enum<"AudioGroups", keyof<typeof(AudioGroups)>, number>,
     DebuggingLabels = Enum.new("DebuggingLabels", DebuggingLabels) :: Enum<"DebuggingLabels", keyof<typeof(DebuggingLabels)>, string>
 }
+
+table.freeze(enums)
+return enums
