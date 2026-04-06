@@ -13,9 +13,6 @@
 ]=]
 local EnumItem = {}
 EnumItem.__index = EnumItem
-EnumItem.__newindex = function()
-    error(`Tried to add new index`)
-end
 
 
 --[=[
@@ -26,9 +23,6 @@ end
 ]=]
 local Enum = {}
 Enum.__index = Enum
-Enum.__newindex = function()
-    error(`Tried to add new index`)
-end
 
 type EnumItemData<EnumType, ValueType> = {
     read Name: string,

@@ -1,42 +1,14 @@
 local Config = require("./EngineConfig")
 
 export type Tick = {
-    _namedCallbacksInput: {[string]: {
-        Priority: number,
-        Callback: (delta: number, ...any?) -> (...any?)
-    }},
-
-    _namedCallbacksTicking: {[string]: {
-        Priority: number,
-        Callback: (delta: number, ...any?) -> (...any?)
-    }},
-
-    _namedCallbacksInterp: {[string]: {
-        Priority: number,
-        Callback: (alpha: number, ...any?) -> (...any?)
-    }},
-
-    _namedCallbacksRender: {[string]: {
-        Priority: number,
-        Callback: (delta: number, ...any?) -> (...any?)
-    }},
-
-    _orderedCallbacksInput: {[number]: (delta: number, ...any?) -> (...any?)},
-    _orderedCallbacksTicking: {[number]: (delta: number, ...any?) -> (...any?)},
-    _orderedCallbacksInterp: {[number]: (alpha: number, ...any?) -> (...any?)},
-    _orderedCallbacksRender: {[number]: (delta: number, ...any?) -> (...any?)},
-
-    TickRate: number,
-    TickSpeed: number,
-    MaxTicks: number,
-
-    CurrentTick: number,
-    _currentDelta: number,
-
-    DoInterpolation: boolean,
-
     -- Methods
     Init: (e: Engine) -> (),
+
+    GetTickRate: () -> number,
+    GetTickSpeed: () -> number,
+    GetCurrentTick: () -> number,
+    IsInterpolationActive: () -> boolean,
+    SetInterpolationActive: (isActive: boolean) -> (),
 
     ExecuteInputCallbacks: (delta: number) -> (),
     ExecuteTickCallbacks: (delta: number) -> (),

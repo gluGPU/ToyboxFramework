@@ -35,7 +35,7 @@ type AlphaCallbacks = {[string]: {
 
 type AlphaCallbacksOrdered = {[number]: (alpha: number, ...any?) -> (...any?)}
 
-local Tick = {}
+local Tick = {} :: EngineTypes.Tick
 
 local namedCallbacksInput = {} :: DeltaCallbacks
 local namedCallbacksTicking = {} :: DeltaCallbacks
