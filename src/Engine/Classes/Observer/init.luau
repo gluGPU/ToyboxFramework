@@ -64,7 +64,7 @@ function Observer.Observe<Object, ValueType>(
 end
 
 function Observer.CreateObserverFn(objectToObserve, keyToObserve: string)
-    return Observer.Observe(objectToObserve, keyToObserve, callback, valueGuard)
+    -- return Observer.Observe(objectToObserve, keyToObserve, callback, valueGuard)
 end
 
 return Observer
