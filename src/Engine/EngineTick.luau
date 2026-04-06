@@ -179,31 +179,61 @@ function Tick.Init(e: EngineTypes.Engine)
 end
 
 
+--[=[
+    Get the current tick rate.
+
+    @return TickRate number
+]=]
 function Tick.GetTickRate(): typeof(tickRate)
     return tickRate
 end
 
 
+--[=[
+    Get the current tick speed.
+
+    @return TickSpeed number
+]=]
 function Tick.GetTickSpeed(): typeof(tickSpeed)
     return tickSpeed
 end
 
 
+--[=[
+    Get the current tick.
+
+    @return CurrentTick number
+]=]
 function Tick.GetCurrentTick(): typeof(currentTick)
     return currentTick
 end
 
 
+--[=[
+    Get if interpolation is currently active.
+
+    @return IsInterpolationActive boolean
+]=]
 function Tick.IsInterpolationActive(): typeof(doInterpolation)
     return doInterpolation
 end
 
 
+--[=[
+    Set if interpolation is currently active.
+
+    @param isActive boolean
+]=]
 function Tick.SetInterpolationActive(isActive: boolean)
     doInterpolation = isActive
 end
 
 
+--[=[
+    Step through input callbacks.
+
+    @param delta number -- The time since the last frame.
+]=]
 function Tick.ExecuteInputCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_INPUT_STEP)
 
@@ -214,6 +244,12 @@ function Tick.ExecuteInputCallbacks(delta: number)
     debug.profileend()
 end
 
+
+--[=[
+    Step through tick callbacks and increment the current tick.
+
+    @param delta number -- The time since the last frame.
+]=]
 function Tick.ExecuteTickCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_TICK_STEP)
 
@@ -240,6 +276,11 @@ function Tick.ExecuteTickCallbacks(delta: number)
 end
 
 
+--[=[
+    Step through all interpolation callbacks.
+
+    @param delta number -- The time since the last frame.
+]=]
 function Tick.ExecuteInterpCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_INTERP_STEP)
 
@@ -261,6 +302,11 @@ function Tick.ExecuteInterpCallbacks(delta: number)
 end
 
 
+--[=[
+    Step through all rendering callbacks.
+
+    @param delta number -- The time since the last frame.
+]=]
 function Tick.ExecuteRenderCallbacks(delta: number)
     debug.profilebegin(TICK_RUN_RENDER_STEP)
 
@@ -287,6 +333,13 @@ function Tick.SetTickSpeed(new: number)
 end
 
 
+--[=[
+    Bind a function to the tick step with the given name and priority. Fires on a fixed interval.
+
+    @param name string -- The identifier for the function.
+    @param priority number -- How soon this function is called before others each tick. Lower priority indicates it will be called earlier than other functions.
+    @param callback (delta: number, ...any?) -> (...any?) -- The function to bind to the tick.
+]=]
 function Tick.BindToTick(name: string, priority: number, callback: (delta: number, ...any?) -> (...any?))
     if not priority then
         priority = DEFAULT_PRIORITY.Value
@@ -309,6 +362,13 @@ function Tick.BindToTick(name: string, priority: number, callback: (delta: numbe
 end
 
 
+--[=[
+    Bind a function to the interpolation step with the given name and priority. This will return an alpha between the last tick and current tick.
+
+    @param name string -- The identifier for the function.
+    @param priority number -- How soon this function is called before others each step. Lower priority means it will be called sooner.
+    @param callback (alpha: number, ...any?) -> (...any?) -- The function to bind to the interpolation step.
+]=]
 function Tick.BindToInterpolation(name: string, priority: number, callback: (alpha: number, ...any?) -> (...any?))
     if not priority then
         priority = DEFAULT_PRIORITY.Value
@@ -331,6 +391,13 @@ function Tick.BindToInterpolation(name: string, priority: number, callback: (alp
 end
 
 
+--[=[
+    Bind a function to be called every frame, regardless of the tick. Functionally equivalent to <code>RunService:BindToRenderStep()</code>.
+
+    @param name string -- The identifier for the function.
+    @param priority number -- How soon this function is called before others each frame. Lower priority means it will be called sooner.
+    @param callback (delta: number, ...any?) -> (...any?) -- The function to be called every frame.
+]=]
 function Tick.BindToRender(name: string, priority: number, callback: (delta: number, ...any?) -> (...any?))
     if not priority then
         priority = DEFAULT_PRIORITY.Value
@@ -353,6 +420,13 @@ function Tick.BindToRender(name: string, priority: number, callback: (delta: num
 end
 
 
+--[=[
+    Bind a function to be called whenever input is polled, regardless of the tick.
+    
+    @param name string -- The identifier for the function.
+    @param priority number -- How soon this function is called before others each poll. Lower priority means it will be called sooner.
+    @param callback (delta: number, ...any?) -> (...any?) -- The function to be called every poll.
+]=]
 function Tick.BindToInput(name: string, priority: number, callback: (delta: number, ...any?) -> (...any?))
     if not priority then
         priority = DEFAULT_PRIORITY.Value
@@ -375,6 +449,12 @@ function Tick.BindToInput(name: string, priority: number, callback: (delta: numb
 end
 
 
+--[=[
+    Unbind the given function from the tick stage, if it exists.
+
+    @param name string -- The identifier of the function to unbind.
+    @param updateArrray boolean? -- If true, rebuilds the internal callback array.
+]=]
 function Tick.UnbindFromTick(name: string, updateArray: boolean?)
     local existing = namedCallbacksTicking[name]
     if existing then
@@ -387,6 +467,12 @@ function Tick.UnbindFromTick(name: string, updateArray: boolean?)
 end
 
 
+--[=[
+    Unbind the given function from the interpolation stage, if it exists.
+
+    @param name string -- The identifier of the function to unbind.
+    @param updateArrray boolean? -- If true, rebuilds the internal callback array.
+]=]
 function Tick.UnbindFromInterpolation(name: string, updateArray: boolean?)
     local existing = namedCallbacksInterp[name]
     if existing then
@@ -399,6 +485,12 @@ function Tick.UnbindFromInterpolation(name: string, updateArray: boolean?)
 end
 
 
+--[=[
+    Unbind the given function from the render stage, if it exists.
+
+    @param name string -- The identifier of the function to unbind.
+    @param updateArrray boolean? -- If true, rebuilds the internal callback array.
+]=]
 function Tick.UnbindFromRender(name: string, updateArray: boolean?)
     local existing = namedCallbacksRender[name]
     if existing then
@@ -410,6 +502,13 @@ function Tick.UnbindFromRender(name: string, updateArray: boolean?)
     end
 end
 
+
+--[=[
+    Unbind the given function from the input stage, if it exists.
+
+    @param name string -- The identifier of the function to unbind.
+    @param updateArrray boolean? -- If true, rebuilds the internal callback array.
+]=]
 function Tick.UnbindFromInput(name: string, updateArray: boolean?)
     local existing = namedCallbacksInput[name]
     if existing then
@@ -422,11 +521,25 @@ function Tick.UnbindFromInput(name: string, updateArray: boolean?)
 end
 
 
+--[=[
+    !! Not implemented yet !!
+    Yields the current thread for the specified amount of ticks.
+
+    @param ticks number -- Amount of ticks to wait for.
+    @yields
+]=]
 function Tick.WaitInTicks(ticks: number)
     
 end
 
 
+--[=[
+    !! Not implemented yet !!
+    Yields the current thread for the specified amount of seconds.
+
+    @param seconds number -- Amount of seconds to wait for.
+    @yields
+]=]
 function Tick.WaitInSeconds(seconds: number)
     
 end
