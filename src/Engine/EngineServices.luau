@@ -8,6 +8,7 @@ local SERVICES = {
     Replication = require("./Services/Replication"),
     Region = require("./Services/Region"),
     World = require("./Services/World"),
+    Physics = require("./Services/Physics")
 }
 
 return SERVICES

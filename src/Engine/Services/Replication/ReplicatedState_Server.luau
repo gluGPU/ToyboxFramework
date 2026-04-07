@@ -127,7 +127,7 @@ function ReplicatedState_Server.Set<T>(self: ReplicatedState_Server<T>, newState
 
     local remote = self._remote :: RemoteEvent
     for _, player in self.Players do
-        remote:FireClient(player, ReplicationAction.Set, newState)
+        remote:FireClient(player, ReplicationAction.Set.Value, newState)
     end
 end
 
@@ -146,7 +146,7 @@ function ReplicatedState_Server.Update<T>(self: ReplicatedState_Server<T>, path:
 
     local remote = self._remote :: RemoteEvent
     for _, player in self.Players do
-        remote:FireClient(player, ReplicationAction.Update, path, newValues)
+        remote:FireClient(player, ReplicationAction.Update.Value, path, newValues)
     end
 end
 
