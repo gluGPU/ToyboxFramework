@@ -1,4 +1,15 @@
 {
+  "globIgnorePaths": [
+    "**/default.project.json",
+    "**/moonwave.toml",
+    "**/rokit.toml",
+    "**/selene.toml",
+    "**/stylua.toml",
+    "**/wally.toml",
+    "**/testez.yaml",
+    "**/*.txt"
+  ],
+  
   "name": "toybox_build",
   "tree": {
     "$className": "DataModel",
