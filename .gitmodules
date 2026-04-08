@@ -3,9 +3,7 @@
 	url = https://github.com/magicoal-nerb/impulse
 [submodule "src/Engine/Libraries/Signal"]
 	path = src/Engine/Libraries/Signal
-	url = https://github.com/gluGPU/SignalPlus
-	branch = ToyboxFramework
+	url = https://github.com/AlexanderLindholt/SignalPlus
 [submodule "src/Engine/Libraries/Iris"]
 	path = src/Engine/Libraries/Iris
-	url = https://github.com/gluGPU/Iris
-	branch = ToyboxFramework
+	url = https://github.com/SirMallard/Iris
