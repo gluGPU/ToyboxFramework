@@ -6,8 +6,8 @@
 --]]
 
 local CalculateTicks = require("./Util/CalculateTicks")
+local EngineConfig = require("./EngineConfig")
 local EngineEnums = require("./EngineEnums")
-local EngineTypes = require("./EngineTypes")
 local Logger = require("./Classes/Logger")
 
 local DEFAULT_PRIORITY = EngineEnums.TickPriority.Default
@@ -35,7 +35,38 @@ type AlphaCallbacks = {[string]: {
 
 type AlphaCallbacksOrdered = {[number]: (alpha: number, ...any?) -> (...any?)}
 
-local Tick = {} :: EngineTypes.Tick
+export type Tick = {
+    -- Methods
+    Init: (configs: typeof(EngineConfig)) -> (),
+
+    GetTickRate: () -> number,
+    GetTickSpeed: () -> number,
+    GetCurrentTick: () -> number,
+    IsInterpolationActive: () -> boolean,
+    SetInterpolationActive: (isActive: boolean) -> (),
+
+    ExecuteInputCallbacks: (delta: number) -> (),
+    ExecuteTickCallbacks: (delta: number) -> (),
+    ExecuteInterpCallbacks: (delta: number) -> (),
+    ExecuteRenderCallbacks: (delta: number) -> (),
+
+    SetTickSpeed: (new: number) -> (),
+
+    BindToInput: (name: string, priority: number, callback: (delta: number, ...any?) -> (...any?)) -> (),
+    BindToTick: (name: string, priority: number, callback: (delta: number, ...any?) -> (...any?)) -> (),
+    BindToInterpolation: (name: string, priority: number, callback: (alpha: number, ...any?) -> (...any?)) -> (),
+    BindToRender: (name: string, priority: number, callback: (delta: number, ...any?) -> (...any?)) -> (),
+
+    UnbindFromInput: (name: string, updateArray: boolean?) -> (),
+    UnbindFromTick: (name: string, updateArray: boolean?) -> (),
+    UnbindFromInterpolation: (name: string, updateArray: boolean?) -> (),
+    UnbindFromRender: (name: string, updateArray: boolean?) -> (),
+
+    WaitInTicks: (ticks: number) -> (),
+    WaitInSeconds: (seconds: number) -> ()
+}
+
+local Tick = {} :: Tick
 
 local namedCallbacksInput = {} :: DeltaCallbacks
 local namedCallbacksTicking = {} :: DeltaCallbacks
@@ -169,13 +200,12 @@ end
 
 
 
-function Tick.Init(e: EngineTypes.Engine)
+function Tick.Init(configs: EngineConfig.ConfigType)
     logger:Print("Initializing...")
 
-    tickRate = 1 / e.Config.TICK_RATE
-    maxTicks = e.Config.MAX_TICKS_PER_FRAME
-
-    doInterpolation = e.Config.TICK_INTERPOLATION
+    tickRate = 1 / configs.TICK_RATE
+    maxTicks = configs.MAX_TICKS_PER_FRAME
+    doInterpolation = configs.TICK_INTERPOLATION
 end
 
 

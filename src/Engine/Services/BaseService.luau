@@ -5,7 +5,7 @@
     @gluGPU
 --]]
 
-local EngineTypes = require("../EngineTypes")
+local EngineConfig = require("../EngineConfig")
 
 local BaseService = {}
 BaseService.__index = BaseService
@@ -14,7 +14,7 @@ export type BaseService = {
     Initialized: boolean,
     _initHooks: {() -> ()},
 
-    Init: (e: EngineTypes.Engine) -> (),
+    Init: (configs: EngineConfig.ConfigType) -> (),
     OnInitialized: (callback: () -> ()) -> (),
     _executeInitHooks: () -> (),
 }

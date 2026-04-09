@@ -2,7 +2,7 @@
     Engine Configurations
 --]]
 
-return {
+local configs = {
     USE_RBX_CHARACTERS = true,
 
     -- // Environment
@@ -28,3 +28,7 @@ return {
     -- // World.luau
     MAX_ENTITIES = 1024,
 }
+
+export type ConfigType = typeof(configs)
+
+return configs

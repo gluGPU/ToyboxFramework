@@ -6,9 +6,9 @@
 --]]
 
 local BaseService = require("./BaseService")
-local EngineTypes = require("../EngineTypes")
+local EngineConfig = require("../EngineConfig")
 local Logger = require(".././Classes/Logger")
-local RegionObject = require("@self/RegionObject")
+local RegionObject = require("./Region/RegionObject")
 local Strings = require("../Util/Strings")
 
 export type RegionObject = RegionObject.RegionObject
@@ -36,9 +36,9 @@ Region._currentLoadedRegions = 0
 local logger = Logger.new("Region", true)
 
 
-function Region.Init(e: EngineTypes.Engine)
+function Region.Init(configs: EngineConfig.ConfigType)
     logger:Print("Initializing...")
-    Region._maxLoadedRegions = e.Config.MAX_LOADED_REGIONS
+    Region._maxLoadedRegions = configs.MAX_LOADED_REGIONS
 
     Region.Initialized = true
     Region._executeInitHooks()

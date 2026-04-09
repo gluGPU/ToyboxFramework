@@ -10,7 +10,6 @@ local SoundService = game:GetService("SoundService")
 local AudioStems = require("@self/AudioStems")
 local BaseService = require("./BaseService")
 local EngineEnums = require("../EngineEnums")
-local EngineTypes = require("../EngineTypes")
 local Logger = require("../Classes/Logger")
 
 export type AudioStems = AudioStems.AudioStems

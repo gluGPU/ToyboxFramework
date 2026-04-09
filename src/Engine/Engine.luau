@@ -1,3 +1,4 @@
+--!strict
 --[[
     Engine.luau
     1/11/26
@@ -14,7 +15,27 @@ local Config = require("./EngineConfig")
 local Services = require("./EngineServices")
 local Stats = require("./EngineStats")
 local Tick = require("./EngineTick")
-local Types = require("./EngineTypes")
+
+
+type EngineFields = {
+    read Services: Services.ServicesType,
+    read Config: Config.ConfigType,
+    read Tick: Tick.Tick,
+    read Stats: Stats.Stats,
+}
+
+type EngineMethods = {
+    Init: (configOverrides: {[string]: any}?) -> (),
+    OnInitialized: (callback: (Config.ConfigType) -> () -> ()) -> (),
+    GetIsEngineInitialized: () -> boolean,
+
+    CreateUpdateLoop: () -> (),
+    DestroyUpdateLoop: () -> (),
+    GetIsLoopActive: () -> boolean,
+    StepUpdateOnce: () -> (),
+}
+
+export type Engine = EngineFields & EngineMethods
 
 
 -- Vars
@@ -24,23 +45,20 @@ local isStudio = RunService:IsStudio()
 
 local engineLogger = Logger.new("Engine")
 
-local Engine = {}
+local cleanupHooks = {} :: {(Engine) -> ()}
+local initHooks = {} :: {(Engine) -> ((Engine) -> ()?)}
 
-Engine.Initialized = false
-Engine.InitializationHooks = {} :: {(Engine) -> ((Engine) -> ()?)}
-Engine.CleanupHooks = {} :: {(Engine) -> ()}
+local isInitialized = false
+local isUpdateLoopActive = false
+local tickConn = nil :: RBXScriptConnection?
+local renderConn = nil :: RBXScriptConnection?
 
-Engine.Services = Services
-Engine.Config = Config
-Engine.Types = Types
-Engine.Tick = Tick
-Engine.Stats = Stats
-
-Engine.IsUpdateLoopActive = false
-Engine._tickConn = nil :: RBXScriptConnection?
-Engine._renderConn = nil :: RBXScriptConnection?
-
-export type Engine = typeof(Engine)
+local Engine = {
+    Services = Services,
+    Config = Config,
+    Tick = Tick,
+    Stats = Stats
+} :: Engine
 
 --[=[
     Initializes Toybox configurations and services, then calls engine initialization hooks.
@@ -48,14 +66,16 @@ export type Engine = typeof(Engine)
     @param configOverrides {[string]: any}? -- A dictionary that overrides engine configs listed in EngineConfigs.luau.
 ]=]
 function Engine.Init(configOverrides: {[string]: any}?)
+    engineLogger:Assert(not isInitialized, `The engine is already initialized!`)
+
     -- print("Starting main initialization")
     engineLogger:Print("Starting engine init")
 
-    local config = Engine.Config
-    local services = Engine.Services
+    local config = Config
+    local services = Services
 
     if configOverrides then
-        for i, v in configOverrides do
+        for i, v in pairs(configOverrides) do
             config[i] = v
         end
 
@@ -71,11 +91,10 @@ function Engine.Init(configOverrides: {[string]: any}?)
         module.Init(Engine)
     end
 
-    Engine.Initialized = true
-    for _, callback in Engine.InitializationHooks do
+    for _, callback in initHooks do
         local cleanup = callback(Engine)
         if cleanup then
-            table.insert(Engine.CleanupHooks, cleanup)
+            table.insert(cleanupHooks, cleanup)
         end
     end
 end
@@ -86,15 +105,25 @@ end
 
     @param callback (Engine) -> ((Engine) -> ()?) -- The callback to call after the engine initializes.
 ]=]
-function Engine.OnInitialized(callback: (Engine) -> ((Engine) -> ()?))
-    if Engine.Initialized then
-        local cleanup = callback()
+function Engine.OnInitialized(callback: (Config.ConfigType) -> () -> ())
+    if isInitialized then
+        local cleanup = callback(Engine.Config)
         if cleanup then
-            table.insert(Engine.CleanupHooks, cleanup)
+            table.insert(cleanupHooks, cleanup)
         end
     else
-        table.insert(Engine.InitializationHooks, callback)
+        table.insert(initHooks, callback)
     end
+end
+
+
+--[=[
+    Returns if the engine has been initialized yet.
+
+    @return boolean -- Whether or not the engine has been initialized.
+]=]
+function Engine.GetIsEngineInitialized(): boolean
+    return isInitialized
 end
 
 
@@ -107,10 +136,10 @@ local executeRender = Tick.ExecuteRenderCallbacks
     Starts Toybox's update loop. For more information, see EngineTick.
 ]=]
 function Engine.CreateUpdateLoop()
-    engineLogger:Assert(Engine.Initialized, "Engine has not initialized yet.")
-    engineLogger:Assert(not Engine.IsUpdateLoopActive, "Engine loop is already active.")
+    engineLogger:Assert(isInitialized, "Engine has not initialized yet.")
+    engineLogger:Assert(not isUpdateLoopActive, "Engine loop is already active.")
 
-    Engine.IsUpdateLoopActive = true
+    isUpdateLoopActive = true
 
     engineLogger:Warn("Creating Update Loop")
 
@@ -143,8 +172,8 @@ function Engine.CreateUpdateLoop()
         Stats.PushTimes(input, tick, interp, render)
     end)
 
-    Engine._tickConn = c1
-    Engine._renderConn = c2
+    tickConn = c1
+    renderConn = c2
 end
 
 
@@ -152,22 +181,29 @@ end
     Stops Toybox's update loop.
 ]=]
 function Engine.DestroyUpdateLoop()
-    engineLogger:Assert(Engine.IsUpdateLoopActive, "Engine loop is not active.")
+    engineLogger:Assert(isUpdateLoopActive, "Engine loop is not active.")
     engineLogger:Warn("Destroying Update Loop")
 
-    local c1: RBXScriptConnection?, c2: RBXScriptConnection? = Engine._tickConn, Engine._renderConn
+    local c1: RBXScriptConnection?, c2: RBXScriptConnection? = tickConn, renderConn
     if c1 and c2 then
         c1:Disconnect()
         c2:Disconnect()
 
-        Engine._tickConn = nil
-        Engine._renderConn = nil
-
-        c1 = nil
-        c2 = nil
+        tickConn = nil
+        renderConn = nil
     end
 
-    Engine.IsUpdateLoopActive = false
+    isUpdateLoopActive = false
+end
+
+
+--[=[
+    Get if Toybox's update loop is currently active.
+
+    @return boolean -- Whether or not the update loop is active.
+]=]
+function Engine.GetIsLoopActive(): boolean
+    return isUpdateLoopActive
 end
 
 
@@ -175,7 +211,7 @@ end
     Steps a single time through the update loop.
 ]=]
 function Engine.StepUpdateOnce()
-    engineLogger:Assert(not Engine.IsUpdateLoopActive, "Can only step if update loop is inactive.")
+    engineLogger:Assert(not isUpdateLoopActive, "Can only step if update loop is inactive.")
 
     local c1: RBXScriptConnection?, c2: RBXScriptConnection? = nil, nil
 
@@ -193,8 +229,9 @@ function Engine.StepUpdateOnce()
         executeTick(delta)
         tick = os.clock() - t2
 
-        c1:Disconnect()
-        c1 = nil
+        if c1 then
+            c1:Disconnect()
+        end
     end)
     
     c2 = RunService.PostSimulation:Connect(function(delta: number)
@@ -210,8 +247,9 @@ function Engine.StepUpdateOnce()
 
         Stats.PushTimes(input, tick, interp, render)
 
-        c2:Disconnect()
-        c2 = nil
+        if c2 then
+            c2:Disconnect()
+        end
     end)
 end
 
