@@ -7,9 +7,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Engine = require(ReplicatedStorage.Engine.Engine)
-local Audio = require(ReplicatedStorage.Engine.Services.Audio)
 
 local services = Engine.Services
+local Audio = services.Audio
 local Debug = services.Debug
 local Iris = Debug.Iris
 
@@ -18,7 +18,7 @@ local music1 = audioAssets.AirFlowStems
 
 Engine.OnInitialized(function()
     local moving = workspace:WaitForChild("MovingAudio"):WaitForChild("Tick_Interp"):WaitForChild("AudioEmitter")
-    local stemPlayers = {} :: {Audio.AudioStems}
+    local stemPlayers = {}
 
     local players = Audio.ConvertIdsToPlayers(music1)
     local airFlowStems = Audio.CreateAudioStems2D("Air Flow", players)

@@ -13,14 +13,6 @@ local RunService = game:GetService("RunService")
 local Engine = require(ReplicatedStorage.Engine.Engine)
 local EngineServices = Engine.Services
 
-EngineServices.TestingService.OnInitialized(function()
-    -- warn("TestingService Init")
-end)
-
-EngineServices.TestingService2.OnInitialized(function()
-    -- warn("TestingService2 Init")
-end)
-
 local Tick = Engine.Tick
 Engine.OnInitialized(function()
     Engine.CreateUpdateLoop()
