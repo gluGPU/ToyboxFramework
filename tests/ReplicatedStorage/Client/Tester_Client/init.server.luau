@@ -13,14 +13,6 @@ local RunService = game:GetService("RunService")
 local Engine = require(ReplicatedStorage.Engine.Engine)
 local EngineServices = Engine.Services
 
-EngineServices.TestingService.OnInitialized(function()
-    -- warn("TestingService Init")
-end)
-
-EngineServices.TestingService2.OnInitialized(function()
-    -- warn("TestingService2 Init")
-end)
-
 local Tick = Engine.Tick
 Engine.OnInitialized(function()
     Engine.CreateUpdateLoop()
@@ -99,10 +91,10 @@ Engine.OnInitialized(function()
         Iris.Window({"Toybox - Debug View"}, {size = windowSize})
 
             Iris.Tree({"Tick Info"})
-                Iris.Text({"Tick Rate: ".. 1 / Tick.TickRate})
-                Iris.Text({string.format("Tick Speed: %.3f", Tick.TickSpeed)})
-                Iris.Text({"Current Tick: ".. Tick.CurrentTick})
-                Iris.Text({string.format("Current Interp: %.3f", Tick._currentDelta / (Tick.TickRate / Tick.TickSpeed))})
+                Iris.Text({"Tick Rate: ".. 1 / Tick.GetTickRate()})
+                Iris.Text({string.format("Tick Speed: %.3f", Tick.GetTickSpeed())})
+                Iris.Text({"Current Tick: ".. Tick.GetCurrentTick()})
+                -- Iris.Text({string.format("Current Interp: %.3f", Tick.Get / (Tick.TickRate / Tick.TickSpeed))})
             Iris.End()
 
             Iris.Tree({"Replication Info"})

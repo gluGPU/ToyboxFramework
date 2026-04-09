@@ -1,6 +1,7 @@
 {
   "globIgnorePaths": [
     "**/default.project.json",
+    "**/*.project.json",
     "**/moonwave.toml",
     "**/rokit.toml",
     "**/selene.toml",
@@ -11,14 +12,12 @@
   ],
   
   "name": "toybox_build",
+  "emitLegacyScripts": false,
+
   "tree": {
     "$className": "DataModel",
 
     "ReplicatedStorage": {
-      "Game": {
-        "$path": "src/Game"
-      },
-
       "Engine": {
         "$path": "src/Engine"
       },
@@ -31,21 +30,6 @@
     "ServerStorage": {
       "Tests": {
         "$path": "tests/ServerStorage"
-      }
-    },
-
-    "Players": {
-      "$properties": {
-      }
-    },
-
-    "StarterPlayer": {
-      "StarterCharacterScripts": {
-        "$path": "src/Build/StarterCharacterScripts"
-      },
-
-      "StarterPlayerScripts": {
-        "$path": "src/Build/StarterPlayerScripts"
       }
     }
   }

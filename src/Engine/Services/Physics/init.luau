@@ -5,10 +5,10 @@
     @gluGPU
 --]]
 
-
+local EngineConfig = require("../EngineConfig")
 local LuauPhysics = require("../Libraries/Impulse/luau-physics")
 local BaseService = require("./BaseService")
-local EngineTypes = require("../EngineTypes")
+local EngineTick = require("../EngineTick")
 
 local World = LuauPhysics.World
 
@@ -23,8 +23,8 @@ local Physics = BaseService.new() :: BaseService.BaseService & Physics
 Physics.World = World
 
 
-function Physics.Init(e: EngineTypes.Engine)
-    e.Tick.BindToTick("Toybox-StepImpulse", 1500, function(delta: number)
+function Physics.Init(configs: EngineConfig.ConfigType)
+    EngineTick.BindToTick("Toybox-StepImpulse", 1500, function(delta: number)
         World.step(delta)
     end)
 

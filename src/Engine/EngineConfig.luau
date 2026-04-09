@@ -2,13 +2,14 @@
     Engine Configurations
 --]]
 
-return {
+local configs = {
     USE_RBX_CHARACTERS = true,
 
     -- // Environment
 
     -- // Region.luau
     MAX_LOADED_REGIONS = 16,
+    REGION_TAG_NAME = "ToyboxRegion",
 
 
     -- // Tick.luau
@@ -28,3 +29,7 @@ return {
     -- // World.luau
     MAX_ENTITIES = 1024,
 }
+
+export type ConfigType = typeof(configs)
+
+return configs

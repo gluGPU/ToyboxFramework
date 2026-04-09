@@ -5,20 +5,17 @@
     @gluGPU
 --]]
 
+local CollectionService = game:GetService("CollectionService")
+
 local BaseService = require("./BaseService")
-local EngineTypes = require("../EngineTypes")
+local EngineConfig = require("../EngineConfig")
 local Logger = require(".././Classes/Logger")
-local RegionObject = require("@self/RegionObject")
+local RegionObject = require("./Region/RegionObject")
 local Strings = require("../Util/Strings")
 
 export type RegionObject = RegionObject.RegionObject
   
 export type Region = {
-    _loadedRegions: {[string]: RegionObject},
-    _regionDataFolder: Folder?,
-    _maxLoadedRegions: number,
-    _currentLoadedRegions: number,
-
     SetRegionFolder: (folder: Folder) -> (),
 
     CreateRegion: (regionName: string) -> (),
@@ -26,19 +23,32 @@ export type Region = {
     GetCurrentRegions: () -> ({RegionObject})
 }
 
+export type RegionRbxInstances<PreloadType, ScriptType, CollectionType> = (Model | Folder) & {
+    PreloadScripts: Folder & PreloadType,
+    Scripts: Folder & ScriptType,
+    RegionCollection: Folder & CollectionType
+}
+
 local Region = BaseService.new() :: BaseService.BaseService & Region
-Region._loadedRegions = {}
-Region._regionDataFolder = nil
-Region._maxLoadedRegions = 16
-Region._currentLoadedRegions = 0
+
+local loadedRegions: {[string]: RegionObject} = {}
+local regionDataFolder: Folder? = nil
+local maxLoadedRegions: number = 16
+local currentLoadedRegions: number = 0
+
+local nonReplicatingParent = workspace.CurrentCamera
 
 
 local logger = Logger.new("Region", true)
 
 
-function Region.Init(e: EngineTypes.Engine)
+function Region.Init(configs: EngineConfig.ConfigType)
     logger:Print("Initializing...")
-    Region._maxLoadedRegions = e.Config.MAX_LOADED_REGIONS
+    maxLoadedRegions = configs.MAX_LOADED_REGIONS
+
+    for _, region in CollectionService:GetTagged(configs.REGION_TAG_NAME) do
+        
+    end
 
     Region.Initialized = true
     Region._executeInitHooks()
@@ -46,32 +56,32 @@ end
 
 
 function Region.SetRegionFolder(folder: Folder)
-    Region._regionDataFolder = folder
+    regionDataFolder = folder
 end
 
 
 function Region.CreateRegion(regionName: string): RegionObject?
     logger:AssertIfUninitialized(Region)
     logger:Assert(
-        Region._currentLoadedRegions < Region._maxLoadedRegions,
+        currentLoadedRegions < maxLoadedRegions,
         Strings.ERR_TOO_MANY_REGIONS
     )
 
     
 
-    Region._currentLoadedRegions += 1
+    currentLoadedRegions += 1
 end
 
 
 function Region.GetRegion(regionName: string): RegionObject?
     logger:AssertIfUninitialized(Region)
-    return Region._loadedRegions[regionName] or nil
+    return loadedRegions[regionName] or nil
 end
 
 
 function Region.GetCurrentRegions(): {[string]: RegionObject}
     logger:AssertIfUninitialized(Region)
-    return Region._loadedRegions
+    return loadedRegions
 end
 
 
