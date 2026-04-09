@@ -9,6 +9,7 @@ local configs = {
 
     -- // Region.luau
     MAX_LOADED_REGIONS = 16,
+    REGION_TAG_NAME = "ToyboxRegion",
 
 
     -- // Tick.luau

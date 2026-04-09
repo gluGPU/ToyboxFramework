@@ -45,8 +45,8 @@ local isStudio = RunService:IsStudio()
 
 local engineLogger = Logger.new("Engine")
 
-local cleanupHooks = {} :: {(Engine) -> ()}
-local initHooks = {} :: {(Engine) -> ((Engine) -> ()?)}
+local cleanupHooks = {} :: {(Config.ConfigType) -> ()}
+local initHooks = {} :: {(Config.ConfigType) -> (() -> ()?)}
 
 local isInitialized = false
 local isUpdateLoopActive = false
@@ -84,15 +84,16 @@ function Engine.Init(configOverrides: {[string]: any}?)
     end
 
     -- initialize main systems
-    Tick.Init(Engine)
+    Tick.Init(config)
 
     -- initialize auxillary services
     for i, module in services do
-        module.Init(Engine)
+        module.Init(config)
     end
 
+    isInitialized = true
     for _, callback in initHooks do
-        local cleanup = callback(Engine)
+        local cleanup = callback(config)
         if cleanup then
             table.insert(cleanupHooks, cleanup)
         end

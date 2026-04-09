@@ -8,6 +8,7 @@
 local EngineConfig = require("../EngineConfig")
 local LuauPhysics = require("../Libraries/Impulse/luau-physics")
 local BaseService = require("./BaseService")
+local EngineTick = require("../EngineTick")
 
 local World = LuauPhysics.World
 
@@ -23,7 +24,7 @@ Physics.World = World
 
 
 function Physics.Init(configs: EngineConfig.ConfigType)
-    e.Tick.BindToTick("Toybox-StepImpulse", 1500, function(delta: number)
+    EngineTick.BindToTick("Toybox-StepImpulse", 1500, function(delta: number)
         World.step(delta)
     end)
 
