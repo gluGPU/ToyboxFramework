@@ -5,10 +5,10 @@
     @gluGPU
 --]]
 
-local EngineConfig = require("../EngineConfig")
-local LuauPhysics = require("../Libraries/Impulse/luau-physics")
-local BaseService = require("./BaseService")
-local EngineTick = require("../EngineTick")
+local EngineConfig = require("../../EngineConfig")
+local LuauPhysics = require("../../Libraries/Impulse/luau-physics")
+local BaseService = require("../BaseService")
+local EngineTick = require("../../EngineTick")
 
 local World = LuauPhysics.World
 

@@ -4,8 +4,8 @@
     @gluGPU
 --]]
 
-local BaseService = require("./BaseService")
-local Logger = require("../Classes/Logger")
+local BaseService = require("../BaseService")
+local Logger = require("../../Classes/Logger")
 
 export type Environment = {
 

@@ -7,8 +7,8 @@
     ECS Framework
 --]]
 
-local BaseService = require("./BaseService")
-local Logger = require("../Classes/Logger")
+local BaseService = require("./../BaseService")
+local Logger = require("../../Classes/Logger")
 
 local Archetype = require("@self/Archetype")
 local Component = require("@self/Component")

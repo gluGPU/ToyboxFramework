@@ -19,15 +19,15 @@ local isServer = RunService:IsServer()
 local CREATE_RSTATE_REMOTE_NAME = "_createReplicatedStateRemote"
 local RSTATE_REMOTES_FOLDER_NAME = "_replicatedStateRemotes"
 
-export type ReplicatedState_Client<T> = ReplicatedState_Client.ReplicatedState_Client<T>
-export type ReplicatedState_Server<T> = ReplicatedState_Server.ReplicatedState_Server<T>
+export type ReplicatedState_Client<T, K> = ReplicatedState_Client.ReplicatedState_Client<T, K>
+export type ReplicatedState_Server<T, K> = ReplicatedState_Server.ReplicatedState_Server<T, K>
 
 export type ClientMethods = {
     -- ObserveReplicatedState: <T>(name: string) -> (ReplicatedState_Client<T>)
 }
 
 export type ServerMethods = {
-    CreateReplicatedState: <T>(name: string, players: {Player}, initialState: T?) -> (ReplicatedState_Server<T>)
+    CreateReplicatedState: <T, K>(name: string, players: {Player}, properties: {[T]: K}) -> (ReplicatedState_Server<T, K>)
 }
 
 export type Replication = {
@@ -36,8 +36,9 @@ export type Replication = {
 
     Client: ClientMethods,
     Server: ServerMethods,
+    _registeredStates: {[]},
 
-    OnReplicatedStateCreated: Signal.Signal<ReplicatedState_Client<any>>
+    OnReplicatedStateCreated: Signal.Signal<ReplicatedState_Client<any, any>>
 }
 
 local logger = Logger.new("Replication", true)
@@ -48,11 +49,12 @@ local Server = {} :: ServerMethods
 
 Replication.Client = Client
 Replication.Server = Server
+Replication._registeredStates = {}
 
 function Replication.Init()
     logger:Print("Initializing...")
 
-    local onRsCreatedSignal = Signal() :: Signal.Signal<ReplicatedState_Client<any>>
+    local onRsCreatedSignal = Signal() :: Signal.Signal<ReplicatedState_Client<any, any>>
     Replication.OnReplicatedStateCreated = onRsCreatedSignal
 
     if isClient then
@@ -62,7 +64,7 @@ function Replication.Init()
         Replication._createReplicatedStateRemote = createRemote
         Replication._replicatedStateRemotes = remotesFolder
 
-        createRemote.OnClientEvent:Connect(function(id: number, name: string, remote: RemoteEvent, initialState: any)
+        createRemote.OnClientEvent:Connect(function(id: number, name: string, remote: RemoteEvent, properties: {[T]: K})
             local rState = ReplicatedState_Client.new(id, name, remote, initialState)
             onRsCreatedSignal:Fire(rState)
         end)
@@ -86,7 +88,7 @@ end
 
 
 -- Server API
-function Server.CreateReplicatedState<T>(name: string, players: {Player}, initialState: T?, isUnreliable: boolean?): ReplicatedState_Server<T>
+function Server.CreateReplicatedState<T, K>(name: string, players: {Player}, properties: {[T]: K}, isUnreliable: boolean?): ReplicatedState_Server<T, K>
     logger:AssertIfUninitialized(Replication)
     logger:AssertIfNotServer()
     logger:Assert(name ~= nil, "Must provide name argument")
@@ -96,16 +98,16 @@ function Server.CreateReplicatedState<T>(name: string, players: {Player}, initia
     newRemote.Name = name
     newRemote.Parent = Replication._replicatedStateRemotes
 
-    local rState = ReplicatedState_Server.new(name, newRemote, players, initialState)
+    local rState = ReplicatedState_Server.new(name, newRemote, players, properties)
     
     local createRemote = Replication._createReplicatedStateRemote
     for _, player in players do
-        createRemote:FireClient(player, rState.Id, name, newRemote, initialState)
+        createRemote:FireClient(player, rState.Id, name, newRemote, properties)
     end
 
     local addedConn = rState.PlayersAdded:Connect(function(playersAdded: {Player})
         for _, player in playersAdded do
-            createRemote:FireClient(player, rState.Id, name, newRemote, rState.State)
+            createRemote:FireClient(player, rState.Id, name, newRemote, properties)
         end
     end)
 

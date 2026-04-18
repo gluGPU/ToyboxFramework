@@ -7,8 +7,8 @@
 
 local UserInputService = game:GetService("UserInputService")
 
-local BaseService = require("./BaseService")
-local Logger = require("../Classes/Logger")
+local BaseService = require("../BaseService")
+local Logger = require("../../Classes/Logger")
 
 local ActionGroup = require("@self/ActionGroup")
 
@@ -33,12 +33,12 @@ function Input.Init()
 end
 
 
-function Input.CreateActionGroup(groupId: string): ActionGroupObject
+function Input.CreateActionGroup(groupId: string)--: ActionGroupObject
     
 end
 
 
-function Input.GetActionGroup(groupId: string): ActionGroupObject
+function Input.GetActionGroup(groupId: string)--: ActionGroupObject
     
 end
 

@@ -6,9 +6,9 @@
 
 local RunService = game:GetService("RunService")
 
-local BaseService = require("./BaseService")
-local Logger = require("../Classes/Logger")
-local Iris = require("../Libraries/Iris/lib")
+local BaseService = require("../BaseService")
+local Logger = require("../../Classes/Logger")
+local Iris = require("../../Libraries/Iris/lib")
 
 export type Debug = {
     Iris: typeof(Iris.Init())

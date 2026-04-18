@@ -47,7 +47,7 @@ end
 --[=[
     Fires attached observer cleanups, then destroys the <code>Property</code>.
 ]=]
-function Property.Destroy<ValueType>(self: Property<ValueType>)
+function Property.Destroy<ValueType>(self: PropertyData<ValueType>)
     for _, cleanup in self._observerCleanups do
         cleanup()
     end

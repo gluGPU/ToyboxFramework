@@ -2,6 +2,11 @@
     Engine Services to Load
 --]]
 
+local services = script.Parent.Services
+local shared = services.Shared
+local server = services.Server
+
+
 local Audio = require("./Services/Audio")
 local Debug = require("./Services/Debug")
 local Replication = require("./Services/Replication")

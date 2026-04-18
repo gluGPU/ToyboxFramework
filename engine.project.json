@@ -19,7 +19,14 @@
 
     "ReplicatedStorage": {
       "Engine": {
-        "$path": "src/Engine"
+        "$path": "src/Engine",
+
+        "Services": {
+          "$className": "Folder",
+          
+          "Client": {"$path": "src/Engine/Services/Client"},
+          "Shared": {"$path": "src/Engine/Services/Shared"}
+        }
       },
 
       "Tests": {
@@ -28,6 +35,21 @@
     },
 
     "ServerStorage": {
+      "$ignoreUnknownInstances": true,
+      "$className": "ServerStorage",
+
+      "Engine": {
+        "$className": "Folder",
+
+        "Services": {
+          "$className": "Folder",
+          
+          "Server": {
+            "$path": "src/Engine/Services/Server"
+          }
+        }
+      },
+      
       "Tests": {
         "$path": "tests/ServerStorage"
       }

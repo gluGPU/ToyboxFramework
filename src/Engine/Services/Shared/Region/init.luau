@@ -7,11 +7,11 @@
 
 local CollectionService = game:GetService("CollectionService")
 
-local BaseService = require("./BaseService")
-local EngineConfig = require("../EngineConfig")
-local Logger = require(".././Classes/Logger")
+local BaseService = require("../BaseService")
+local EngineConfig = require("../../EngineConfig")
+local Logger = require("../../Classes/Logger")
 local RegionObject = require("./Region/RegionObject")
-local Strings = require("../Util/Strings")
+local Strings = require("../../Util/Strings")
 
 export type RegionObject = RegionObject.RegionObject
   
@@ -60,7 +60,7 @@ function Region.SetRegionFolder(folder: Folder)
 end
 
 
-function Region.CreateRegion(regionName: string): RegionObject?
+function Region.CreateRegion(regionName: string)--: RegionObject?
     logger:AssertIfUninitialized(Region)
     logger:Assert(
         currentLoadedRegions < maxLoadedRegions,

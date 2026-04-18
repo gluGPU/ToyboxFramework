@@ -52,7 +52,7 @@ function RegionObject.new(worldName: string): RegionObject
 end
 
 
-function RegionObject.Destroy(self: RegionObject)
+function RegionObject.Destroy(self: RegionObjectData)
     for _, callback in self._destroyHooks do
         callback()
     end
