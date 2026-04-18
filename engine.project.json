@@ -8,7 +8,8 @@
     "**/stylua.toml",
     "**/wally.toml",
     "**/testez.yaml",
-    "**/*.txt"
+    "**/*.txt",
+    "src/Engine/Services"
   ],
   
   "name": "toybox_build",
@@ -44,6 +45,10 @@
         "Services": {
           "$className": "Folder",
           
+          "BaseService": {
+            "$path": "src/Engine/Services/BaseService.luau"
+          },
+
           "Server": {
             "$path": "src/Engine/Services/Server"
           }
